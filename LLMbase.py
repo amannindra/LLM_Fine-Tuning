@@ -1,4 +1,6 @@
 from transformers import AutoProcessor, AutoModelForMultimodalLM
+import torch
+import sys
 MODEL_ID = "google/gemma-4-12B-it"
 from time import perf_counter
 # Load model
@@ -6,8 +8,14 @@ processor = AutoProcessor.from_pretrained(MODEL_ID)
 model = AutoModelForMultimodalLM.from_pretrained(
     MODEL_ID,
     dtype="auto",
-    device_map="auto"
+    device_map="cuda"
 )
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+if device != "cuda":
+    print("device not using cuda")
+    sys.exit()
+print("device using cuda")
 
 # Prompt
 messages = [
@@ -24,6 +32,7 @@ inputs = processor.apply_chat_template(
     add_generation_prompt=True,
     enable_thinking=False
 ).to(model.device)
+
 input_len = inputs["input_ids"].shape[-1]
 
 
