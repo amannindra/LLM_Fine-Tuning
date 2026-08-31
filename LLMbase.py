@@ -1,50 +1,46 @@
-from transformers import AutoProcessor, AutoModelForMultimodalLM
+from transformers import AutoProcessor, AutoModelForMultimodalLM, AutoTokenizer, AutoModelForCausalLM
 import torch
 import sys
-MODEL_ID = "google/gemma-4-12B-it"
-from time import perf_counter
-# Load model
-processor = AutoProcessor.from_pretrained(MODEL_ID)
-model = AutoModelForMultimodalLM.from_pretrained(
-    MODEL_ID,
-    dtype="auto",
-    device_map="cuda"
+
+model_name = "Qwen/Qwen3-4B"
+
+# load the tokenizer and the model
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    torch_dtype="auto",
+    device_map="auto"
 )
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-if device != "cuda":
-    print("device not using cuda")
-    sys.exit()
-print("device using cuda")
-
-# Prompt
+# prepare the model input
+prompt = "Give me a short introduction to large language model."
 messages = [
-    {"role": "system", "content": "You are a helpful assistant."},
-    {"role": "user", "content": "Write a short joke about saving RAM."},
+    {"role": "user", "content": prompt}
 ]
-
-# Process input
-inputs = processor.apply_chat_template(
+text = tokenizer.apply_chat_template(
     messages,
-    tokenize=True,
-    return_dict=True,
-    return_tensors="pt",
+    tokenize=False,
     add_generation_prompt=True,
-    enable_thinking=False
-).to(model.device)
+    enable_thinking=True # Switches between thinking and non-thinking modes. Default is True.
+)
+model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
 
-input_len = inputs["input_ids"].shape[-1]
+# conduct text completion
+generated_ids = model.generate(
+    **model_inputs,
+    max_new_tokens=32768
+)
+output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist() 
 
+# parsing thinking content
+try:
+    # rindex finding 151668 (</think>)
+    index = len(output_ids) - output_ids[::-1].index(151668)
+except ValueError:
+    index = 0
 
-perf = perf_counter()
-print(f"Model now Generates: {perf}")
-# Generate output
-outputs = model.generate(**inputs, max_new_tokens=1024)
-response = processor.decode(outputs[0][input_len:], skip_special_tokens=False)
-perf2 = perf_counter()
+thinking_content = tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
+content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
 
-print(f"Model now Generates: {perf2-perf}")
-
-# Parse output
-processor.parse_response(response)
-
+print("thinking content:", thinking_content)
+print("content:", content)
