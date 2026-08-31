@@ -2,6 +2,7 @@ from transformers import AutoProcessor, AutoModelForMultimodalLM, AutoTokenizer,
 import torch
 import sys
 
+
 model_name = "Qwen/Qwen3-4B"
 
 # load the tokenizer and the model
@@ -9,8 +10,15 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     torch_dtype="auto",
-    device_map="auto"
+    device_map="cuda"
 )
+
+device = 'cuda' if torch.cuda.is_available() else "cpu"
+
+if device != "cuda":
+    print("Cuda not availiable")
+    sys.exit()
+print("Cuda is availiable")
 
 # prepare the model input
 prompt = "Give me a short introduction to large language model."
