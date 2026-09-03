@@ -1,5 +1,16 @@
+from time import perf_counter
+start = perf_counter()
+
+
 from LLMbase import LLM
 from datasets import load_dataset
+
+end = perf_counter()
+
+elapsed = end - start
+print(f"Executed in: {elapsed:.6f} seconds")
+
+
 print("Imports Loaded")
 
 
