@@ -16,12 +16,14 @@ print("Imports Loaded")
 
 
 
-def initialize_worker(data):
+def initialize_worker(ags):
     global worker_data
     global worker_model
+    
+    data, model = ags
 
     worker_data = data
-    worker_model = LLM()
+    worker_model = model
 
     print("Worker model initialized")
 
@@ -87,7 +89,7 @@ def main():
     # processes_count = 3
     # processes_pool = Pool(processes_count)
     
-    with Pool(processes=3, initializer=initialize_worker,initargs=(ds_art,)) as pool:
+    with Pool(processes=3, initializer=initialize_worker,initargs=(ds_art, LLM())) as pool:
         pool.map(launch_inference, indexes)
     
     # run_complex_operations(launch_inference(), range(length), processes_pool)
