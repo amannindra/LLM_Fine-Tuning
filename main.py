@@ -6,6 +6,7 @@ from LLMbase import LLM
 from datasets import load_dataset
 from multiprocessing import Pool
 from timebudget import timebudget
+import argparse
 import os
 
 end = perf_counter()
@@ -55,31 +56,35 @@ def load_data():
     return ds_art, ds_unlabel, ds_label
 
 def launch_inference(args):
-    i= args
+    i = args
     
     global worker_data, worker_model
+    try:
+        print("Launching inference for example index:", i)
+        example = worker_data['train'][i]
+        question = example["question"]
+        answer = example["final_decision"]
+        context = example["context"]["contexts"]
+        
+        prompt = make_prompt(question, context)
+        thinking_content, content = worker_model.inference(prompt)
     
-    print("Launching inference for example index:", i)
-    example = worker_data['train'][i]
-    question = example["question"]
-    answer = example["final_decision"]
-    context = example["context"]["contexts"]
-    
-    prompt = make_prompt(question, context)
-    
-    thinking_content, content = worker_model.inference(prompt)
-    
-    if content == answer:
-        print(f"Index {i}: Correct")
-        print(f"Answer: {answer}, and got: {content}")
-        # return 1
-    else:
-        print(f"Index {i}: Incorrect")
-        print(f"Answer: {answer}, and got: {content}")
-        # return -1
-
+        if content == answer:
+            print(f"Index {i}: Correct")
+            print(f"Answer: {answer}, and got: {content}")
+            # return 1
+        else:
+            print(f"Index {i}: Incorrect")
+            print(f"Answer: {answer}, and got: {content}")
+            # return -1
+    except Exception as e:
+        print(f"Index {i}: Error during inference: {e}")
+        return 0
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser = parser.add_argument("processes", type=int, help="Number of processes to use for multiprocessing.")
+
     print("This is the main function.")
     ds_art, ds_unlabel, ds_label = load_data()
     print('Number of CPUs in the system: {}'.format(os.cpu_count()))
@@ -87,17 +92,22 @@ def main():
     indexes = range(0, len(ds_art['train']) // 1000)
     print(f"Processing {len(indexes)} examples.")
     print(f"Indexes: {list(indexes)}")
-    # tasks = [
-    #     (ds_art, i, model)
-    #     for i in indexes
-    # ]
+
     
     args = ds_art
-    # processes_count = 3
-    # processes_pool = Pool(processes_count)
+
     
-    with Pool(processes=3, initializer=initialize_worker,initargs=(args,)) as pool:
-        pool.map(launch_inference, indexes)
+    with Pool(processes=8, initializer=initialize_worker,initargs=(args,)) as pool:
+        result = pool.map(launch_inference, indexes)
+        
+    correct = result.count(1)
+    incorrect = result.count(-1)
+    no_worker = result.count(0)
+    total = correct + incorrect
+    
+    print(f"Correct: {correct}, Incorrect: {incorrect}, No Worker: {no_worker}, Total Processed: {total}")
+    
+    
     
     # run_complex_operations(launch_inference(), range(length), processes_pool)
     
