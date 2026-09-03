@@ -49,6 +49,8 @@ def main():
     
     length = len(ds_art['train']) // 1000
     
+    model = LLM()
+    
     for i in range(length):
         example = ds_art['train'][i]
         question = example["question"]
@@ -56,7 +58,7 @@ def main():
         context = example["context"]["contexts"]
         prompt = make_prompt(question, context)
 
-        model = LLM()
+       
         
         thinking_content, content = model.inference(prompt)
         
