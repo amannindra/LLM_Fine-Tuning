@@ -2,53 +2,85 @@ from transformers import AutoProcessor, AutoModelForMultimodalLM, AutoTokenizer,
 import torch
 import sys
 
+class LLM():
+    def __init__(self):
+        self.model_name = "Qwen/Qwen3-4B"
+        # load the tokenizer and the model
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = AutoModelForCausalLM.from_pretrained(
+            self.model_name,
+            torch_dtype="auto",
+            device_map="cuda"
+        )
 
-model_name = "Qwen/Qwen3-4B"
+        device = 'cuda' if torch.cuda.is_available() else "cpu"
 
-# load the tokenizer and the model
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(
-    model_name,
-    torch_dtype="auto",
-    device_map="cuda"
-)
+        if device != "cuda":
+            print("Cuda not availiable")
+            sys.exit()
+        print("Cuda is availiable")
+        
+    def inference(self, context):
+        prompt = context
+        messages = [
+            {"role": "user", "content": prompt}
+        ]
+        text = self.tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+            enable_thinking=True # Switches between thinking and non-thinking modes. Default is True.
+        )
+        model_inputs = self.tokenizer([text], return_tensors="pt").to(model.device)
 
-device = 'cuda' if torch.cuda.is_available() else "cpu"
+        # conduct text completion
+        generated_ids = self.model.generate(
+            **model_inputs,
+            max_new_tokens=32768
+        )
+        output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist() 
 
-if device != "cuda":
-    print("Cuda not availiable")
-    sys.exit()
-print("Cuda is availiable")
+        # parsing thinking content
+        try:
+            # rindex finding 151668 (</think>)
+            index = len(output_ids) - output_ids[::-1].index(151668)
+        except ValueError:
+            index = 0
 
-# prepare the model input
-prompt = "Give me a short introduction to large language model."
-messages = [
-    {"role": "user", "content": prompt}
-]
-text = tokenizer.apply_chat_template(
-    messages,
-    tokenize=False,
-    add_generation_prompt=True,
-    enable_thinking=True # Switches between thinking and non-thinking modes. Default is True.
-)
-model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
+        thinking_content = self.tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
+        content = self.tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
 
-# conduct text completion
-generated_ids = model.generate(
-    **model_inputs,
-    max_new_tokens=32768
-)
-output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist() 
+        return thinking_content, content
 
-# parsing thinking content
-try:
-    # rindex finding 151668 (</think>)
-    index = len(output_ids) - output_ids[::-1].index(151668)
-except ValueError:
-    index = 0
+# # prepare the model input
+# prompt = "Give me a short introduction to large language model."
+# messages = [
+#     {"role": "user", "content": prompt}
+# ]
+# text = tokenizer.apply_chat_template(
+#     messages,
+#     tokenize=False,
+#     add_generation_prompt=True,
+#     enable_thinking=True # Switches between thinking and non-thinking modes. Default is True.
+# )
+# model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
 
-thinking_content = tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
-content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
+# # conduct text completion
+# generated_ids = model.generate(
+#     **model_inputs,
+#     max_new_tokens=32768
+# )
+# output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist() 
 
-print("thinking content:", thinking_content)
-print("content:", content)
+# # parsing thinking content
+# try:
+#     # rindex finding 151668 (</think>)
+#     index = len(output_ids) - output_ids[::-1].index(151668)
+# except ValueError:
+#     index = 0
+
+# thinking_content = tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
+# content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
+
+# print("thinking content:", thinking_content)
+# print("content:", content)
