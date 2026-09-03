@@ -102,14 +102,17 @@ def main():
     args = ds_art
 
     print(cli_args.processes)
-    
+    correct = 0
+    incorrect = 0
+    no_worker = 0
     with Pool(processes=cli_args.processes, initializer=initialize_worker,initargs=(args,)) as pool:
         result = pool.map(launch_inference, indexes)
-        print(f"Result: {result}")    
-    correct = result.count(1)
-    incorrect = result.count(-1)
-    no_worker = result.count(0)
-    total = correct + incorrect
+        print(f"Result: {result}")
+        correct += result.count(1)
+        incorrect += result.count(-1)
+        no_worker += result.count(0)
+        total = correct + incorrect
+        
     
     with open("results.json", "w") as f:
         json.dump(result, f)
