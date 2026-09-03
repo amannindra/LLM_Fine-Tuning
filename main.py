@@ -50,11 +50,7 @@ def main():
     length = len(ds_art['train']) // 1000
     
     for i in range(length):
-        example = ds_art['train'][0]
-        
-        
-        
-        
+        example = ds_art['train'][i]
         question = example["question"]
         answer = example["final_decision"]
         context = example["context"]["contexts"]
