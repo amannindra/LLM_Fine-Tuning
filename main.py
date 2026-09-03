@@ -4,6 +4,9 @@ start = perf_counter()
 
 from LLMbase import LLM
 from datasets import load_dataset
+from multiprocessing import Pool
+from timebudget import timebudget
+import os
 
 end = perf_counter()
 
@@ -13,8 +16,6 @@ print("Imports Loaded")
 
 
 def make_prompt(question, context) -> str:
-
-
     return f"""
         Use the medical context below to answer the question.
 
@@ -39,44 +40,74 @@ def load_data():
     print(f"Loaded Datasets: {ds_art}, {ds_unlabel}, {ds_label}")
     return ds_art, ds_unlabel, ds_label
 
+def launch_inference(data, i, model):
+    print("Launching inference for example index:", i)
+    example = data['train'][i]
+    question = example["question"]
+    answer = example["final_decision"]
+    context = example["context"]["contexts"]
+    
+    prompt = make_prompt(question, context)
+    
+    thinking_content, content = model.inference(prompt)
+    
+    if content == answer:
+        print("Output matches the answer.")
+        print(f"Answer: {answer}, and got: {content}")
+        # return 1
+    else:
+        print("Output does not match the answer.")
+        print(f"Answer: {answer}, and got: {content}")
+        # return -1
+
+        
+
+
+@timebudget
+def run_complex_operations(operation, input, pool):
+    pool.map(operation, input)
+
 
 def main():
     print("This is the main function.")
     ds_art, ds_unlabel, ds_label = load_data()
-    
-    correct = 0
-    incorrect = 0
+    print('Number of CPUs in the system: {}'.format(os.cpu_count()))
     
     length = len(ds_art['train']) // 1000
     
     model = LLM()
     
-    for i in range(length):
-        example = ds_art['train'][i]
-        question = example["question"]
-        answer = example["final_decision"]
-        context = example["context"]["contexts"]
-        prompt = make_prompt(question, context)
+    processes_count = 3
+    processes_pool = Pool(processes_count)
+    
+    run_complex_operations(launch_inference, range(length), processes_pool)
+    
+    
+    
+    
+    # for i in range(length):
+    #     example = ds_art['train'][i]
+    #     question = example["question"]
+    #     answer = example["final_decision"]
+    #     context = example["context"]["contexts"]
+    #     prompt = make_prompt(question, context)
 
-       
+    #     thinking_content, content = model.inference(prompt)
         
-        thinking_content, content = model.inference(prompt)
-        
-        if content == answer:
-            print("Output matches the answer.")
-            print(f"Answer: {answer}, and got: {content}")
-            correct += 1
-        else:
-            print("Output does not match the answer.")
-            print(f"Answer: {answer}, and got: {content}")
-            incorrect += 1
+    #     if content == answer:
+    #         print("Output matches the answer.")
+    #         print(f"Answer: {answer}, and got: {content}")
+    #         correct += 1
+    #     else:
+    #         print("Output does not match the answer.")
+    #         print(f"Answer: {answer}, and got: {content}")
+    #         incorrect += 1
             
-        if i % 10 == 0:
-            print(f"Processed {i} examples.")
+    #     if i % 10 == 0:
+    #         print(f"Processed {i} examples.")
             
-            
-    print(f"Correct: {correct}, Incorrect: {incorrect}, Total: {correct + incorrect}")
-    print(f"Accuracy: {correct / (correct + incorrect) * 100:.2f}%")
+    # print(f"Correct: {correct}, Incorrect: {incorrect}, Total: {correct + incorrect}")
+    # print(f"Accuracy: {correct / (correct + incorrect) * 100:.2f}%")
 
     
 if __name__ == "__main__":     
