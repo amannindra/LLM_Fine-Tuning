@@ -46,8 +46,13 @@ def main():
     
     correct = 0
     incorrect = 0
-    for i in range(len(ds_art['train']) // 1000):
+    
+    length = len(ds_art['train']) // 1000
+    
+    for i in range(length):
         example = ds_art['train'][0]
+        
+        
         
         
         question = example["question"]
@@ -67,6 +72,9 @@ def main():
             print("Output does not match the answer.")
             print(f"Answer: {answer}, and got: {content}")
             incorrect += 1
+            
+        if i % 10 == 0:
+            print(f"Processed {i} examples.")
             
             
     print(f"Correct: {correct}, Incorrect: {incorrect}, Total: {correct + incorrect}")
