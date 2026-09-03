@@ -105,7 +105,7 @@ def main():
     
     with Pool(processes=cli_args.processes, initializer=initialize_worker,initargs=(args,)) as pool:
         result = pool.map(launch_inference, indexes)
-        
+        print(f"Result: {result}")    
     correct = result.count(1)
     incorrect = result.count(-1)
     no_worker = result.count(0)
