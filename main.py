@@ -55,16 +55,19 @@ def load_data():
     return ds_art, ds_unlabel, ds_label
 
 def launch_inference(args):
-    data, i, model = args
+    i= args
+    
+    global worker_data, worker_model
+    
     print("Launching inference for example index:", i)
-    example = data['train'][i]
+    example = worker_data['train'][i]
     question = example["question"]
     answer = example["final_decision"]
     context = example["context"]["contexts"]
     
     prompt = make_prompt(question, context)
     
-    thinking_content, content = model.inference(prompt)
+    thinking_content, content = worker_model.inference(prompt)
     
     if content == answer:
         print(f"Index {i}: Correct")
@@ -93,7 +96,7 @@ def main():
     # processes_count = 3
     # processes_pool = Pool(processes_count)
     
-    with Pool(processes=3, initializer=initialize_worker,initargs=(args)) as pool:
+    with Pool(processes=3, initializer=initialize_worker,initargs=(args,)) as pool:
         pool.map(launch_inference, indexes)
     
     # run_complex_operations(launch_inference(), range(length), processes_pool)
