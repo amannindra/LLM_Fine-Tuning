@@ -9,8 +9,6 @@ end = perf_counter()
 
 elapsed = end - start
 print(f"Executed in: {elapsed:.6f} seconds")
-
-
 print("Imports Loaded")
 
 
