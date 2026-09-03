@@ -85,6 +85,7 @@ def launch_inference(args):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--processes", type=int, help="Number of processes to use for multiprocessing.")
+    parser.add_argument("--index", type=int, help="Number of processes to use for multiprocessing.")
     cli_args = parser.parse_args()
 
     
@@ -93,7 +94,7 @@ def main():
     ds_art, ds_unlabel, ds_label = load_data()
     print('Number of CPUs in the system: {}'.format(os.cpu_count()))
     
-    indexes = range(0, len(ds_art['train']) // 1000)
+    indexes = range(0, len(ds_art['train']) // cli_args.index)
     print(f"Processing {len(indexes)} examples.")
     print(f"Indexes: {list(indexes)}")
 
