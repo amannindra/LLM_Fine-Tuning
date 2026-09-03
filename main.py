@@ -1,5 +1,6 @@
 from time import perf_counter
 start = perf_counter()
+import json
 
 
 from LLMbase import LLM
@@ -109,7 +110,12 @@ def main():
     no_worker = result.count(0)
     total = correct + incorrect
     
+    with open("results.json", "w") as f:
+        json.dump(result, f)
+    
     print(f"Correct: {correct}, Incorrect: {incorrect}, No Worker: {no_worker}, Total Processed: {total}")
+    
+    
     
     
     
