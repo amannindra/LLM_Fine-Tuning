@@ -16,14 +16,15 @@ print("Imports Loaded")
 
 
 
-def initialize_worker(ags):
-    global worker_data
-    global worker_model
-    
-    data, model = ags
+worker_data = None
+worker_model = None
+
+
+def initialize_worker(data):
+    global worker_data, worker_model
 
     worker_data = data
-    worker_model = model
+    worker_model = LLM()
 
     print("Worker model initialized")
 
@@ -81,15 +82,18 @@ def main():
     print('Number of CPUs in the system: {}'.format(os.cpu_count()))
     
     indexes = range(0, len(ds_art['train']) // 1000)
+    print(f"Processing {len(indexes)} examples.")
+    print(f"Indexes: {list(indexes)}")
     # tasks = [
     #     (ds_art, i, model)
     #     for i in indexes
     # ]
     
+    args = ds_art
     # processes_count = 3
     # processes_pool = Pool(processes_count)
     
-    with Pool(processes=3, initializer=initialize_worker,initargs=(ds_art, LLM())) as pool:
+    with Pool(processes=3, initializer=initialize_worker,initargs=(args)) as pool:
         pool.map(launch_inference, indexes)
     
     # run_complex_operations(launch_inference(), range(length), processes_pool)
