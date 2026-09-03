@@ -1,6 +1,6 @@
 from LLMbase import LLM
 from datasets import load_dataset
-
+print("Imports Loaded")
 
 
 def make_prompt(example: dict) -> str:
@@ -29,6 +29,7 @@ def load_data():
     ds_art = load_dataset("qiaojin/PubMedQA", "pqa_artificial")
     ds_unlabel = load_dataset("qiaojin/PubMedQA", "pqa_unlabeled")
     ds_label = load_dataset("qiaojin/PubMedQA", "pqa_labeled")
+    print(f"Loaded Datasets: {ds_art}, {ds_unlabel}, {ds_label}")
     return ds_art, ds_unlabel, ds_label
 
 
