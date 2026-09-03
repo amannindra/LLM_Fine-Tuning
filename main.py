@@ -83,8 +83,11 @@ def launch_inference(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser = parser.add_argument("processes", type=int, help="Number of processes to use for multiprocessing.")
+    parser.add_argument("--processes", type=int, help="Number of processes to use for multiprocessing.")
+    cli_args = parser.parse_args()
 
+    
+    
     print("This is the main function.")
     ds_art, ds_unlabel, ds_label = load_data()
     print('Number of CPUs in the system: {}'.format(os.cpu_count()))
@@ -96,8 +99,9 @@ def main():
     
     args = ds_art
 
+    print(cli_args.processes)
     
-    with Pool(processes=8, initializer=initialize_worker,initargs=(args,)) as pool:
+    with Pool(processes=cli_args.processes, initializer=initialize_worker,initargs=(args,)) as pool:
         result = pool.map(launch_inference, indexes)
         
     correct = result.count(1)
