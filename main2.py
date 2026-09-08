@@ -59,11 +59,11 @@ def launch_inference(args):
         example = worker_data['train'][i]
         question = example["question"]
         answer = example["final_decision"]
-        context = example["context"]["contexts"]
+        contexted  = example["context"]["contexts"]
         
         if i.context:
             
-            prompt = make_prompt(question, context)
+            prompt = make_prompt(question, contexted)
         else:
             prompt = make_prompt(question, "")
             
