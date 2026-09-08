@@ -53,6 +53,8 @@ def load_data():
 def launch_inference(args):
     i = args
     
+    print(f"args: {i}")
+    
     global worker_data, worker_model
     try:
         print("Launching inference for example index:", i)
