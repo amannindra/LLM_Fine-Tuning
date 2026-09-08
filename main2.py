@@ -32,11 +32,11 @@ def initialize_worker(data):
 
 
 def make_prompt(question, context) -> str:
+    
     return f"""
         Use the medical context below to answer the question.
 
-        Context:
-        {context}
+
 
         Question:
         {question}
@@ -48,6 +48,22 @@ def make_prompt(question, context) -> str:
 
         Answer:
     """
+    # return f"""
+    #     Use the medical context below to answer the question.
+
+    #     # Context:
+    #     # {context}
+
+    #     Question:
+    #     {question}
+
+    #     Respond with exactly one of these labels:
+    #     yes
+    #     no
+    #     maybe
+
+    #     Answer:
+    # """
 
 def load_data():
     ds_art = load_dataset("qiaojin/PubMedQA", "pqa_artificial")
