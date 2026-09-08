@@ -10,3 +10,10 @@ __pycache__/
 *.pyo
 *.pyd
 __pycache__/
+
+note/notes.aux
+note/notes.fdb_latexmk
+note/notes.fls
+note/notes.log
+note/notes.pdf
+note/notes.synctex.gz

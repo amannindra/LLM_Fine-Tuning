@@ -33,37 +33,15 @@ def initialize_worker(data):
 
 def make_prompt(question, context) -> str:
     
-    return f"""
-        Use the medical context below to answer the question.
-
-
-
-        Question:
-        {question}
-
-        Respond with exactly one of these labels:
+    s = f"""Use the medical context below to answer the question. {context}. Question {question}  Respond with exactly one of these labels:
         yes
         no
         maybe
 
-        Answer:
-    """
-    # return f"""
-    #     Use the medical context below to answer the question.
-
-    #     # Context:
-    #     # {context}
-
-    #     Question:
-    #     {question}
-
-    #     Respond with exactly one of these labels:
-    #     yes
-    #     no
-    #     maybe
-
-    #     Answer:
-    # """
+        Answer:"""
+        
+    return s
+    
 
 def load_data():
     ds_art = load_dataset("qiaojin/PubMedQA", "pqa_artificial")
@@ -83,7 +61,12 @@ def launch_inference(args):
         answer = example["final_decision"]
         context = example["context"]["contexts"]
         
-        prompt = make_prompt(question, context)
+        if i.context:
+            
+            prompt = make_prompt(question, context)
+        else:
+            prompt = make_prompt(question, "")
+            
         thinking_content, content = worker_model.inference(prompt)
     
         if content == answer:
@@ -97,11 +80,16 @@ def launch_inference(args):
     except Exception as e:
         print(f"Index {i}: Error during inference: {e}")
         return 0
+    
+
+
+# python main2.py --processes 8 --index 3000
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--processes", type=int, help="Number of processes to use for multiprocessing.")
     parser.add_argument("--index", type=int, help="Number of processes to use for multiprocessing.")
+    parser.add_argument("--context", type=bool)
     cli_args = parser.parse_args()
 
     
