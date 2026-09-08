@@ -20,13 +20,15 @@ print("Imports Loaded")
 
 worker_data = None
 worker_model = None
+worker_context = None 
 
 
-def initialize_worker(data):
-    global worker_data, worker_model
+def initialize_worker(data, context):
+    global worker_data, worker_model, worker_context
 
     worker_data = data
     worker_model = LLM()
+    worker_context = context
 
     print("Worker model initialized")
 
@@ -50,20 +52,18 @@ def load_data():
     print(f"Loaded Datasets: {ds_art}, {ds_unlabel}, {ds_label}")
     return ds_art, ds_unlabel, ds_label
 
-def launch_inference(args):
-    i = args
+def launch_inference(index):
+
     
-    print(f"args: {i}")
-    
-    global worker_data, worker_model
+    global worker_data, worker_model, worker_context
     try:
-        print("Launching inference for example index:", i)
-        example = worker_data['train'][i]
+        print("Launching inference for example index:", index)
+        example = worker_data['train'][index]
         question = example["question"]
         answer = example["final_decision"]
         contexted  = example["context"]["contexts"]
         
-        if i.context:
+        if worker_context:
             
             prompt = make_prompt(question, contexted)
         else:
@@ -72,15 +72,15 @@ def launch_inference(args):
         thinking_content, content = worker_model.inference(prompt)
     
         if content == answer:
-            print(f"Index {i}: Correct")
+            print(f"Index {index}: Correct")
             print(f"Answer: {answer}, and got: {content}")
             return 1
         else:
-            print(f"Index {i}: Incorrect")
+            print(f"Index {index}: Incorrect")
             print(f"Answer: {answer}, and got: {content}")
             return -1
     except Exception as e:
-        print(f"Index {i}: Error during inference: {e}")
+        print(f"Index {index}: Error during inference: {e}")
         return 0
     
 
@@ -111,7 +111,7 @@ def main():
     correct = 0
     incorrect = 0
     no_worker = 0
-    with Pool(processes=cli_args.processes, initializer=initialize_worker,initargs=(args,)) as pool:
+    with Pool(processes=cli_args.processes, initializer=initialize_worker,initargs=(ds_art,worker_context)) as pool:
         result = pool.map(launch_inference, indexes)
         print(f"Result: {result}")
         correct += result.count(1)
