@@ -85,14 +85,17 @@ def launch_inference(index):
     
 
 
-# python main2.py --processes 8 --index 3000
+# python main2.py --processes 8 --index 3000 --context True
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--processes", type=int, help="Number of processes to use for multiprocessing.")
-    parser.add_argument("--index", type=int, help="Number of processes to use for multiprocessing.")
+    parser.add_argument("--index", type=int, default=1,
+                        help="Dataset-size divisor: process len(train) // index examples (default: 1, all examples).")
     parser.add_argument("--context", type=bool)
     cli_args = parser.parse_args()
+    if cli_args.index <= 0:
+        parser.error("--index must be a positive integer")
 
     
     
