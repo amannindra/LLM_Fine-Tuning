@@ -3,7 +3,6 @@ start = perf_counter()
 import json
 
 
-from LLMbase import LLM
 from datasets import load_dataset
 from multiprocessing import Pool
 from timebudget import timebudget
@@ -24,6 +23,7 @@ worker_context = None
 
 
 def initialize_worker(data, context):
+    from LLMbase import LLM
     global worker_data, worker_model, worker_context
 
     worker_data = data
@@ -87,15 +87,65 @@ def launch_inference(index):
 
 # python main2.py --processes 8 --index 3000 --context True
 
+def evaluate_checkpoint(checkpoint, num_samples):
+    from unsloth import FastLanguageModel
+    import torch
+    import re
+
+    model, tokenizer = FastLanguageModel.from_pretrained(
+        model_name=checkpoint,
+        max_seq_length=2048,
+        dtype=None,
+        load_in_4bit=True,
+    )
+    FastLanguageModel.for_inference(model)
+    dataset = load_dataset("qiaojin/PubMedQA", "pqa_labeled", split="train")
+    dataset = dataset.select(range(min(num_samples, len(dataset))))
+    results = []
+    for example in dataset:
+        # Match fine.py's raw training prompt, without the target answer.
+        context = "".join(example["context"]["contexts"])
+        prompt = f"""You are an assistant helping doctors with their questions. You are given the question and the important context you need to answer that question.
+    Question: {example['question']}
+    Context: {context}
+    answer:"""
+        inputs = tokenizer(prompt, return_tensors="pt", truncation=True,
+                           max_length=2032).to(model.get_input_embeddings().weight.device)
+        with torch.inference_mode():
+            output = model.generate(**inputs, max_new_tokens=16, do_sample=False,
+                                    pad_token_id=tokenizer.eos_token_id)
+        response = tokenizer.decode(output[0, inputs.input_ids.shape[1]:],
+                                    skip_special_tokens=True).strip()
+        match = re.match(r"^(yes|no|maybe)\b", response.lower())
+        prediction = match.group(1) if match else None
+        results.append(dict(pubid=example["pubid"], answer=example["final_decision"],
+                            prediction=prediction, response=response,
+                            correct=prediction == example["final_decision"]))
+        print(f"{len(results)}/{len(dataset)}: expected={example['final_decision']} response={response!r}")
+    with open("checkpoint_results.json", "w") as handle:
+        json.dump({"checkpoint": checkpoint, "dataset": "pqa_labeled",
+                   "results": results}, handle, indent=2)
+    correct = sum(row["correct"] for row in results)
+    print(f"Accuracy: {correct}/{len(results)} ({correct / len(results):.2%})")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--processes", type=int, help="Number of processes to use for multiprocessing.")
     parser.add_argument("--index", type=int, default=1,
                         help="Dataset-size divisor: process len(train) // index examples (default: 1, all examples).")
     parser.add_argument("--context", type=bool)
+    parser.add_argument("--checkpoint", help="Local Unsloth/LoRA checkpoint to evaluate on pqa_labeled.")
+    parser.add_argument("--num-samples", type=int, default=100,
+                        help="Number of labeled examples for checkpoint evaluation (default: 100).")
     cli_args = parser.parse_args()
     if cli_args.index <= 0:
         parser.error("--index must be a positive integer")
+    if cli_args.num_samples <= 0:
+        parser.error("--num-samples must be a positive integer")
+    if cli_args.checkpoint:
+        evaluate_checkpoint(cli_args.checkpoint, cli_args.num_samples)
+        return
 
     
     
