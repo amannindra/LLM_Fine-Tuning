@@ -15,6 +15,8 @@ model, tokenizer = FastLanguageModel.from_pretrained(
     
 )
 
+print(f"Model is loaded and Tokenizer is loaded")
+
 model = FastLanguageModel.get_peft_model(model,
                                          r = 16, 
                                          target_modules = [
