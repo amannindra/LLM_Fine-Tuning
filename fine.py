@@ -9,24 +9,30 @@ from unsloth import is_bfloat16_supported
 
 ds_art, ds_unlabel, ds_label = load_data()
 
-ds_art = ds_art.select(range(100))
+ds_art['train'] = ds_art["train"].select(range(100))
+
 
 def format_prompt_function(example):
     question = example["question"]
     answer = example["final_decision"]
-    context = example["context"]["contexts"]
+    
+    context = ""
+
+    for i in example["context"]["contexts"]:
+        context += i
     
     example["text"] = f"""You are an assistant helping doctors with their questions. You are given the question and the important context you need to answer that question.
     Question: {question}
     Context: {context}
-    answer: {answer}
-"""
+    answer: {answer} """
+    
+    # print(f"example: {example}")
     return example
 
 
 
     
-ds_art = ds_art.map(format_prompt_function, batched = True)
+ds_art["train"] = ds_art["train"].map(format_prompt_function, batched = False)
 
 max_seq_length = 2048
 dtype = None
@@ -61,15 +67,15 @@ model = FastLanguageModel.get_peft_model( model,
 EOS_Token = tokenizer.eos_token
 
 trainer = SFTTrainer(model = model, 
-                     train_dataset = ds_art,
+                     train_dataset = ds_art["train"],
                      dataset_text_field = "text",
                      max_seq_length = max_seq_length,
                      dataset_num_proc = 24,
                     args = TrainingArguments(
-                        per_device_train_batch_size = 20, # The batch size per GPU/TPU core
+                        per_device_train_batch_size = 2, # The batch size per GPU/TPU core
                         gradient_accumulation_steps = 4, # Number of steps to perform befor each gradient accumulation
                         warmup_steps = 5, # Few updates with low learning rate before actual training
-                        max_steps = 1, # Specifies the total number of training steps (batches) to run.
+                        max_steps = 3, # Specifies the total number of training steps (batches) to run.
                         learning_rate = 2e-4,
                         fp16 = not is_bfloat16_supported(),
                         bf16 = is_bfloat16_supported(),
