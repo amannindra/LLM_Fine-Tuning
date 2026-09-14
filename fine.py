@@ -72,10 +72,10 @@ trainer = SFTTrainer(model = model,
                      max_seq_length = max_seq_length,
                      dataset_num_proc = 24,
                     args = TrainingArguments(
-                        per_device_train_batch_size = 2, # The batch size per GPU/TPU core
+                        per_device_train_batch_size = 20, # The batch size per GPU/TPU core
                         gradient_accumulation_steps = 4, # Number of steps to perform befor each gradient accumulation
-                        warmup_steps = 0, # Few updates with low learning rate before actual training
-                        max_steps = 3, # Specifies the total number of training steps (batches) to run.
+                        warmup_steps = 5, # Few updates with low learning rate before actual training
+                        max_steps = 60, # Specifies the total number of training steps (batches) to run.
                         learning_rate = 2e-4,
                         fp16 = not is_bfloat16_supported(),
                         bf16 = is_bfloat16_supported(),
