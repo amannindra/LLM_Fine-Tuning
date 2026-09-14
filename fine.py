@@ -17,20 +17,18 @@ model, tokenizer = FastLanguageModel.from_pretrained(
 
 print(f"Model is loaded and Tokenizer is loaded")
 
-model = FastLanguageModel.get_peft_model(model,
-                                         r = 16, 
-                                         target_modules = [
-                                             "q_proj", "k_proj",
-                                             "v_proj", "o_proj",
-                                             "gate_proj", "up_proj", 
-                                             "down_proj"]
-                                    , lora_alpha = 16,
-                                    lora_dropout = 0, 
-                                    bias = "none",
-                                    use_gradient_checkpoint = "unsloth", 
-                                    random_state = 3407,
-                                    use_rslora = False,
-                                    loftq_config = None
+model = FastLanguageModel.get_peft_model(  model,
+    r = 16, # Choose any number > 0 ! Suggested 8, 16, 32, 64, 128
+    target_modules = ["q_proj", "k_proj", "v_proj", "o_proj",
+                      "gate_proj", "up_proj", "down_proj",],
+    lora_alpha = 16, # a higher alpha value assigns more weight to the LoRA activations
+    lora_dropout = 0, # Supports any, but = 0 is optimized
+    bias = "none",    # Supports any, but = "none" is optimized
+    use_gradient_checkpointing = "unsloth", # True or "unsloth" for very long context
+    random_state = 3407,
+    use_rslora = False,
+    loftq_config = None,
+
                                     )
 
 
