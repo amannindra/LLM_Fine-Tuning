@@ -8,7 +8,7 @@ dtype = None
 load_in_4bit = True
 
 model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name = "Qwen/Qwen3-4B",
+    model_name = "unsloth/Llama-3.2-3B-Instruct", # unsloth/Llama-3.2-3B-Instruct #Qwen/Qwen3-4B
     max_seq_length=max_seq_length,
     dtype = dtype,
     load_in_4bit =load_in_4bit
