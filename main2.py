@@ -2,6 +2,9 @@ from time import perf_counter
 start = perf_counter()
 import json
 
+from unsloth import FastLanguageModel
+import torch
+import re
 
 from datasets import load_dataset
 from multiprocessing import Pool
@@ -88,9 +91,7 @@ def launch_inference(index):
 # python main2.py --processes 8 --index 3000 --context True
 
 def evaluate_checkpoint(checkpoint, num_samples):
-    from unsloth import FastLanguageModel
-    import torch
-    import re
+
 
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=checkpoint,
@@ -100,14 +101,17 @@ def evaluate_checkpoint(checkpoint, num_samples):
     )
     FastLanguageModel.for_inference(model)
     dataset = load_dataset("qiaojin/PubMedQA", "pqa_labeled", split="train")
-    dataset = dataset.select(range(min(num_samples, len(dataset))))
+    
+    if num_samples > len(dataset):
+        num_samples = dataset
+    
+    dataset = dataset.select(range(num_samples))
     results = []
     for example in dataset:
         # Match fine.py's raw training prompt, without the target answer.
-        context = "".join(example["context"]["contexts"])
+        # context = "".join(example["context"]["contexts"])
         prompt = f"""You are an assistant helping doctors with their questions. You are given the question and the important context you need to answer that question.
     Question: {example['question']}
-    Context: {context}
     answer:"""
         inputs = tokenizer(prompt, return_tensors="pt", truncation=True,
                            max_length=2032).to(model.get_input_embeddings().weight.device)
