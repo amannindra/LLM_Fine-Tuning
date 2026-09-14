@@ -9,6 +9,8 @@ from unsloth import is_bfloat16_supported
 
 ds_art, ds_unlabel, ds_label = load_data()
 
+ds_art = ds_art.select(range(100))
+
 def format_prompt_function(example):
     question = example["question"]
     answer = example["final_decision"]
@@ -21,7 +23,8 @@ def format_prompt_function(example):
 """
     return example
 
-    
+
+
     
 ds_art = ds_art.map(format_prompt_function, batched = True)
 
