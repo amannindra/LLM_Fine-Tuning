@@ -8,7 +8,7 @@ from unsloth import is_bfloat16_supported, FastLanguageModel
 import argparse
 from pathlib import Path
 from datasets import load_dataset
-from main2 import make_prompt
+# from main2 import make_prompt
 
 
 # base_model = AutoModelForCausalLM.from_pretrained(
@@ -36,6 +36,8 @@ class LLMInference:
         self.model = None
         self.load_model(self.location)
         
+
+        
     def load_model(self, location):
         self.model = PeftModel.from_pretrained(
             self.base_model,
@@ -44,7 +46,19 @@ class LLMInference:
         )
         self.model = self.model.to(self.device)
         
+    def make_prompt(question, context) -> str:
+    
+        s = f"""Use the medical context below to answer the question. {context}. Question {question}  Respond with exactly one of these labels:
+            yes
+            no
+            maybe
+
+            Answer:"""
+            
+        return s
+        
     def inference(self, prompt):
+        prompt = self.make_prompt(prompt)
         messages = [
         {
             "role": "user",
@@ -83,10 +97,10 @@ example = ds_art['train'][index]
 question = example["question"]
 
 answer = example["final_decision"]
-prompt = make_prompt(question, "")
 print(f"Test Prompt: {prompt}")
 
 LLM = LLMInference()
+
 content = LLM.run(prompt)
 
 if content == answer:
