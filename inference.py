@@ -7,6 +7,9 @@ from transformers import TrainingArguments, DataCollatorForSeq2Seq, AutoModelFor
 from unsloth import is_bfloat16_supported, FastLanguageModel
 import argparse
 from pathlib import Path
+from datasets import load_dataset
+from main2 import make_prompt
+
 
 # base_model = AutoModelForCausalLM.from_pretrained(
 #     "unsloth/Llama-3.2-3B-Instruct"
@@ -20,67 +23,60 @@ from pathlib import Path
 #     base_model,
 #     args.trained
 # )
+class LLMInference:
+    def __init__(self,location = "outputs/checkpoint-60/"):
+        self.device = torch.device("cuda")
+        self.base_model = AutoModelForCausalLM.from_pretrained(
+            "unsloth/Llama-3.2-3B-Instruct"
+        )
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            "unsloth/Llama-3.2-3B-Instruct"
+        )
+        self.location = location
+        self.model = None
+        self.load_model(self.location)
+        
+    def load_model(self, location):
+        self.model = PeftModel.from_pretrained(
+            self.base_model,
+            location
+            # args.trained
+        )
+        self.model = self.model.to(self.device)
+        
+    def run(self, prompt):
+        inputs = self.tokenizer.apply_chat_template(
+            prompt,
+            tokenize=True,
+            add_generation_prompt=True,
+            return_tensors="pt"
+        ).to("cuda:0")
+        
+        outputs = self.model.generate(
+            inputs,
+            max_new_tokens=2048,
+            temperature=0.7,
+        )
+        
+        response = self.tokenizer.decode(
+            outputs[0],
+            skip_special_tokens=True
+        )
 
-if torch.cuda.is_available():
-    device = torch.device("cuda")
-else:
-    device = torch.device("cpu")
-
-
-base_model = AutoModelForCausalLM.from_pretrained(
-    "unsloth/Llama-3.2-3B-Instruct"
-)
-
-
-tokenizer = AutoTokenizer.from_pretrained(
-    "unsloth/Llama-3.2-3B-Instruct"
-)
-
-
-location = "outputs/checkpoint-60/"
-
-
-model = PeftModel.from_pretrained(
-    base_model,
-    location
-    # args.trained
-)
-model = model.to(device)
-
-print("model is loaded")
-
-messages = [
-    {
-        "role": "user",
-        "content": """
-        Question: What causes diabetes?
-
-        Context:
-        Diabetes occurs when the body cannot properly regulate blood glucose.
-        """
-    }
-]
-inputs = tokenizer.apply_chat_template(
-    messages,
-    tokenize=True,
-    add_generation_prompt=True,
-    return_tensors="pt"
-).to("cuda:0")
-
-print("input is loaded")
+        print(response)
+        return response
+                
+ds_art = load_dataset("qiaojin/PubMedQA", "pqa_artificial")
+ds_unlabel = load_dataset("qiaojin/PubMedQA", "pqa_unlabeled")
+ds_label = load_dataset("qiaojin/PubMedQA", "pqa_labeled")                
 
 
-outputs = model.generate(
-    inputs,
-    max_new_tokens=2048,
-    temperature=0.7,
-)
+example = ds_art['train'][0]
+question = example["question"]
 
-print("output is generated")
 
-response = tokenizer.decode(
-    outputs[0],
-    skip_special_tokens=True
-)
+prompt = make_prompt(question, "")
+print(f"Test Prompt: {prompt}")
 
-print(response)
+# LLM = LLMInference()
+# LLM.run()
