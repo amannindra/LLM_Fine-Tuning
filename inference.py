@@ -69,7 +69,7 @@ print("input is loaded")
 
 outputs = model.generate(
     inputs,
-    max_new_tokens=512,
+    max_new_tokens=2048,
     temperature=0.7,
 )
 
