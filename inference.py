@@ -8,15 +8,71 @@ from unsloth import is_bfloat16_supported, FastLanguageModel
 import argparse
 from pathlib import Path
 
+# base_model = AutoModelForCausalLM.from_pretrained(
+#     "unsloth/Llama-3.2-3B-Instruct"
+# )
+
+# parser = argparse.ArgumentParser()
+# parser.add_argument("--trained", required=True, type=Path)
+# args = parser.parse_args()
+
+# model = PeftModel.from_pretrained(
+#     base_model,
+#     args.trained
+# )
+
+
+
 base_model = AutoModelForCausalLM.from_pretrained(
     "unsloth/Llama-3.2-3B-Instruct"
 )
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name = "unsloth/Llama-3.2-3B-Instruct", # YOUR MODEL YOU USED FOR TRAINING
+    max_seq_length = 2048,
+    load_in_4bit = True,
+)
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--trained", required=True, type=Path)
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument("--trained", required=True, type=Path)
+# args = parser.parse_args()
+location = "outputs/checkpoint-60/"
+
 
 model = PeftModel.from_pretrained(
     base_model,
-    args.trained
+    location
+    # args.trained
 )
+
+messages = [
+    {
+        "role": "user",
+        "content": """
+        Question: What causes diabetes?
+
+        Context:
+        Diabetes occurs when the body cannot properly regulate blood glucose.
+        """
+    }
+]
+inputs = tokenizer.apply_chat_template(
+    messages,
+    tokenize=True,
+    add_generation_prompt=True,
+    return_tensors="pt"
+).to("cuda")
+
+
+outputs = model.generate(
+    inputs,
+    max_new_tokens=512,
+    temperature=0.7,
+)
+
+
+response = tokenizer.decode(
+    outputs[0],
+    skip_special_tokens=True
+)
+
+print(response)
