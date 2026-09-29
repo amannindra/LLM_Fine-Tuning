@@ -54,7 +54,7 @@ class LLMInference:
         
         
         inputs = self.tokenizer.apply_chat_template(
-            messagesds,
+            messages,
             tokenize=True,
             add_generation_prompt=True,
             return_tensors="pt"
