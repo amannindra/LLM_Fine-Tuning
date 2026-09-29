@@ -57,9 +57,10 @@ def load_data():
     return ds_art, ds_unlabel, ds_label
 
 def launch_inference(index):
-
+    print(f"Launching index: {index}")
     
     global worker_data, worker_model, worker_context
+    
     try:
         # print("Launching inference for example index:", index)
         example = worker_data['train'][index]
