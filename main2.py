@@ -11,7 +11,7 @@ from multiprocessing import Pool
 from timebudget import timebudget
 import argparse
 import os
-from inference import LLMInference
+from inferenceTest import LLMInference
 
 end = perf_counter()
 
