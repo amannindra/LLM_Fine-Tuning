@@ -46,19 +46,19 @@ class LLMInference:
         )
         self.model = self.model.to(self.device)
         
-    def make_prompt(question, context) -> str:
+    # def make_prompt(question, context) -> str:
     
-        s = f"""Use the medical context below to answer the question. {context}. Question {question}  Respond with exactly one of these labels:
-            yes
-            no
-            maybe
+    #     s = f"""Use the medical context below to answer the question. {context}. Question {question}  Respond with exactly one of these labels:
+    #         yes
+    #         no
+    #         maybe
 
-            Answer:"""
+    #         Answer:"""
             
-        return s
+    #     return s
         
     def inference(self, prompt):
-        prompt = self.make_prompt(prompt)
+        # prompt = self.make_prompt(prompt)
         messages = [
         {
             "role": "user",
@@ -88,27 +88,27 @@ class LLMInference:
         print(f"final: {response}")
         return "No thinking", response
                 
-ds_art = load_dataset("qiaojin/PubMedQA", "pqa_artificial")
-ds_unlabel = load_dataset("qiaojin/PubMedQA", "pqa_unlabeled")
-ds_label = load_dataset("qiaojin/PubMedQA", "pqa_labeled")                
+# ds_art = load_dataset("qiaojin/PubMedQA", "pqa_artificial")
+# ds_unlabel = load_dataset("qiaojin/PubMedQA", "pqa_unlabeled")
+# ds_label = load_dataset("qiaojin/PubMedQA", "pqa_labeled")                
 
-index = 0
-example = ds_art['train'][index]
-question = example["question"]
+# index = 0
+# example = ds_art['train'][index]
+# question = example["question"]
 
-answer = example["final_decision"]
-print(f"Test Prompt: {prompt}")
+# answer = example["final_decision"]
+# print(f"Test Prompt: {prompt}")
 
-LLM = LLMInference()
+# LLM = LLMInference()
 
-content = LLM.run(prompt)
+# content = LLM.run(prompt)
 
-if content == answer:
-    print(f"Index {index}: Correct")
-    print(f"Answer: {answer}, and got: {content}")
+# if content == answer:
+#     print(f"Index {index}: Correct")
+#     print(f"Answer: {answer}, and got: {content}")
     
-else:
-    print(f"Index {index}: Incorrect")
-    print(f"Answer: {answer}, and got: {content}")
+# else:
+#     print(f"Index {index}: Incorrect")
+#     print(f"Answer: {answer}, and got: {content}")
     
 
