@@ -78,5 +78,5 @@ question = example["question"]
 prompt = make_prompt(question, "")
 print(f"Test Prompt: {prompt}")
 
-# LLM = LLMInference()
-# LLM.run()
+LLM = LLMInference()
+LLM.run(prompt)
