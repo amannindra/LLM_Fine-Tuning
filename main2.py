@@ -159,7 +159,7 @@ def main():
     
     indexes = range(0, len(ds_art['train']) // cli_args.index)
     print(f"Processing {len(indexes)} examples.")
-    print(f"Indexes: {list(indexes)}")
+    # print(f"Indexes: {list(indexes)}")
 
     
     # args = ds_art
@@ -170,7 +170,7 @@ def main():
     no_worker = 0
     with Pool(processes=cli_args.processes, initializer=initialize_worker,initargs=(ds_art,worker_context)) as pool:
         result = pool.map(launch_inference, indexes)
-        print(f"Result: {result}")
+        # print(f"Result: {result}")
         correct += result.count(1)
         incorrect += result.count(-1)
         no_worker += result.count(0)
