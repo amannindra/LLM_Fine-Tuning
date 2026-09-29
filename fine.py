@@ -1,23 +1,19 @@
-from unsloth import FastLanguageModel
 import torch
 from trl import SFTTrainer
 from peft import LoraConfig
 from main2 import load_data
 from transformers import TrainingArguments, DataCollatorForSeq2Seq
-from unsloth import is_bfloat16_supported
+from unsloth import is_bfloat16_supported, FastLanguageModel
 
 
 ds_art, ds_unlabel, ds_label = load_data()
 
 # ds_art['train'] = ds_art["train"].select(range(100))
 
-
 def format_prompt_function(example):
     question = example["question"]
     answer = example["final_decision"]
-    
     context = ""
-
     for i in example["context"]["contexts"]:
         context += i
     
@@ -41,8 +37,7 @@ model, tokenizer = FastLanguageModel.from_pretrained(
     model_name = "unsloth/Llama-3.2-3B-Instruct", # unsloth/Llama-3.2-3B-Instruct #Qwen/Qwen3-4B
     max_seq_length=max_seq_length,
     dtype = dtype,
-    load_in_4bit =load_in_4bit
-    
+    load_in_4bit =load_in_4bit  
 )
 
 print(f"Model is loaded and Tokenizer is loaded")
