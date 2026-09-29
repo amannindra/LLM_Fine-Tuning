@@ -63,20 +63,30 @@ class LLMInference:
             skip_special_tokens=True
         )
 
-        print(response)
+        print(f"final: {response}")
         return response
                 
 ds_art = load_dataset("qiaojin/PubMedQA", "pqa_artificial")
 ds_unlabel = load_dataset("qiaojin/PubMedQA", "pqa_unlabeled")
 ds_label = load_dataset("qiaojin/PubMedQA", "pqa_labeled")                
 
-
-example = ds_art['train'][0]
+index = 0
+example = ds_art['train'][index]
 question = example["question"]
 
-
+answer = example["final_decision"]
 prompt = make_prompt(question, "")
 print(f"Test Prompt: {prompt}")
 
 LLM = LLMInference()
-LLM.run(prompt)
+content = LLM.run(prompt)
+
+if content == answer:
+    print(f"Index {index}: Correct")
+    print(f"Answer: {answer}, and got: {content}")
+    
+else:
+    print(f"Index {index}: Incorrect")
+    print(f"Answer: {answer}, and got: {content}")
+    
+
