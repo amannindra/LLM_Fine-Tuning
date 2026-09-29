@@ -44,7 +44,7 @@ class LLMInference:
         )
         self.model = self.model.to(self.device)
         
-    def run(self, prompt):
+    def inference(self, prompt):
         messages = [
         {
             "role": "user",
@@ -72,7 +72,7 @@ class LLMInference:
         )
 
         print(f"final: {response}")
-        return response
+        return "No thinking", response
                 
 ds_art = load_dataset("qiaojin/PubMedQA", "pqa_artificial")
 ds_unlabel = load_dataset("qiaojin/PubMedQA", "pqa_unlabeled")

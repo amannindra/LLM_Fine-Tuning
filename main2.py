@@ -11,6 +11,7 @@ from multiprocessing import Pool
 from timebudget import timebudget
 import argparse
 import os
+from inference import LLMInference
 
 end = perf_counter()
 
@@ -30,7 +31,7 @@ def initialize_worker(data, context):
     global worker_data, worker_model, worker_context
 
     worker_data = data
-    worker_model = LLM()
+    worker_model = LLMInference()
     worker_context = context
 
     print("Worker model initialized")
