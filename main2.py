@@ -2,7 +2,7 @@ from time import perf_counter
 start = perf_counter()
 import json
 
-from unsloth import FastLanguageModel
+# from unsloth import FastLanguageModel
 import torch
 import re
 
@@ -91,47 +91,47 @@ def launch_inference(index):
 
 # python main2.py --processes 8 --index 3000 --context True
 
-def evaluate_checkpoint(checkpoint, num_samples):
+# def evaluate_checkpoint(checkpoint, num_samples):
 
 
-    model, tokenizer = FastLanguageModel.from_pretrained(
-        model_name=checkpoint,
-        max_seq_length=2048,
-        dtype=None,
-        load_in_4bit=True,
-    )
-    FastLanguageModel.for_inference(model)
-    dataset = load_dataset("qiaojin/PubMedQA", "pqa_labeled", split="train")
+#     model, tokenizer = FastLanguageModel.from_pretrained(
+#         model_name=checkpoint,
+#         max_seq_length=2048,
+#         dtype=None,
+#         load_in_4bit=True,
+#     )
+#     FastLanguageModel.for_inference(model)
+#     dataset = load_dataset("qiaojin/PubMedQA", "pqa_labeled", split="train")
     
-    if num_samples > len(dataset):
-        num_samples = dataset
+#     if num_samples > len(dataset):
+#         num_samples = dataset
     
-    dataset = dataset.select(range(num_samples))
-    results = []
-    for example in dataset:
-        # Match fine.py's raw training prompt, without the target answer.
-        # context = "".join(example["context"]["contexts"])
-        prompt = f"""You are an assistant helping doctors with their questions. You are given the question and the important context you need to answer that question.
-    Question: {example['question']}
-    answer:"""
-        inputs = tokenizer(prompt, return_tensors="pt", truncation=True,
-                           max_length=2032).to(model.get_input_embeddings().weight.device)
-        with torch.inference_mode():
-            output = model.generate(**inputs, max_new_tokens=16, do_sample=False,
-                                    pad_token_id=tokenizer.eos_token_id)
-        response = tokenizer.decode(output[0, inputs.input_ids.shape[1]:],
-                                    skip_special_tokens=True).strip()
-        match = re.match(r"^(yes|no|maybe)\b", response.lower())
-        prediction = match.group(1) if match else None
-        results.append(dict(pubid=example["pubid"], answer=example["final_decision"],
-                            prediction=prediction, response=response,
-                            correct=prediction == example["final_decision"]))
-        print(f"{len(results)}/{len(dataset)}: expected={example['final_decision']} response={response!r}")
-    with open("checkpoint_results.json", "w") as handle:
-        json.dump({"checkpoint": checkpoint, "dataset": "pqa_labeled",
-                   "results": results}, handle, indent=2)
-    correct = sum(row["correct"] for row in results)
-    print(f"Accuracy: {correct}/{len(results)} ({correct / len(results):.2%})")
+#     dataset = dataset.select(range(num_samples))
+#     results = []
+#     for example in dataset:
+#         # Match fine.py's raw training prompt, without the target answer.
+#         # context = "".join(example["context"]["contexts"])
+#         prompt = f"""You are an assistant helping doctors with their questions. You are given the question and the important context you need to answer that question.
+#     Question: {example['question']}
+#     answer:"""
+#         inputs = tokenizer(prompt, return_tensors="pt", truncation=True,
+#                            max_length=2032).to(model.get_input_embeddings().weight.device)
+#         with torch.inference_mode():
+#             output = model.generate(**inputs, max_new_tokens=16, do_sample=False,
+#                                     pad_token_id=tokenizer.eos_token_id)
+#         response = tokenizer.decode(output[0, inputs.input_ids.shape[1]:],
+#                                     skip_special_tokens=True).strip()
+#         match = re.match(r"^(yes|no|maybe)\b", response.lower())
+#         prediction = match.group(1) if match else None
+#         results.append(dict(pubid=example["pubid"], answer=example["final_decision"],
+#                             prediction=prediction, response=response,
+#                             correct=prediction == example["final_decision"]))
+#         print(f"{len(results)}/{len(dataset)}: expected={example['final_decision']} response={response!r}")
+#     with open("checkpoint_results.json", "w") as handle:
+#         json.dump({"checkpoint": checkpoint, "dataset": "pqa_labeled",
+#                    "results": results}, handle, indent=2)
+#     correct = sum(row["correct"] for row in results)
+#     print(f"Accuracy: {correct}/{len(results)} ({correct / len(results):.2%})")
 
 
 def main():
@@ -140,7 +140,7 @@ def main():
     parser.add_argument("--index", type=int, default=1,
                         help="Dataset-size divisor: process len(train) // index examples (default: 1, all examples).")
     parser.add_argument("--context", type=bool)
-    parser.add_argument("--checkpoint", help="Local Unsloth/LoRA checkpoint to evaluate on pqa_labeled.")
+    # parser.add_argument("--checkpoint", help="Local Unsloth/LoRA checkpoint to evaluate on pqa_labeled.")
     parser.add_argument("--num-samples", type=int, default=100,
                         help="Number of labeled examples for checkpoint evaluation (default: 100).")
     cli_args = parser.parse_args()
@@ -148,9 +148,9 @@ def main():
         parser.error("--index must be a positive integer")
     if cli_args.num_samples <= 0:
         parser.error("--num-samples must be a positive integer")
-    if cli_args.checkpoint:
-        evaluate_checkpoint(cli_args.checkpoint, cli_args.num_samples)
-        return
+    # if cli_args.checkpoint:
+    #     evaluate_checkpoint(cli_args.checkpoint, cli_args.num_samples)
+    #     return
 
     
     print("This is the main function.")
