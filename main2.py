@@ -152,7 +152,6 @@ def main():
         return
 
     
-    
     print("This is the main function.")
     ds_art, ds_unlabel, ds_label = load_data()
     print('Number of CPUs in the system: {}'.format(os.cpu_count()))
