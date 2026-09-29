@@ -3,7 +3,7 @@ import torch
 from trl import SFTTrainer
 from peft import LoraConfig
 from main2 import load_data
-from transformers import TrainingArguments, DataCollatorForSeq2Seq, AutoModelForCausalLM
+from transformers import TrainingArguments, DataCollatorForSeq2Seq, AutoModelForCausalLM, AutoTokenizer
 from unsloth import is_bfloat16_supported, FastLanguageModel
 import argparse
 from pathlib import Path
@@ -30,10 +30,10 @@ else:
 base_model = AutoModelForCausalLM.from_pretrained(
     "unsloth/Llama-3.2-3B-Instruct"
 )
-____, tokenizer = FastLanguageModel.from_pretrained(
-    model_name = "unsloth/Llama-3.2-3B-Instruct", # YOUR MODEL YOU USED FOR TRAINING
-    max_seq_length = 2048,
-    load_in_4bit = True,
+
+
+tokenizer = AutoTokenizer.from_pretrained(
+    "unsloth/Llama-3.2-3B-Instruct"
 )
 
 
