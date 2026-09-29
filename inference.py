@@ -21,20 +21,22 @@ from pathlib import Path
 #     args.trained
 # )
 
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+else:
+    device = torch.device("cpu")
 
 
 base_model = AutoModelForCausalLM.from_pretrained(
     "unsloth/Llama-3.2-3B-Instruct"
 )
-model, tokenizer = FastLanguageModel.from_pretrained(
+____, tokenizer = FastLanguageModel.from_pretrained(
     model_name = "unsloth/Llama-3.2-3B-Instruct", # YOUR MODEL YOU USED FOR TRAINING
     max_seq_length = 2048,
     load_in_4bit = True,
 )
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument("--trained", required=True, type=Path)
-# args = parser.parse_args()
+
 location = "outputs/checkpoint-60/"
 
 
@@ -43,6 +45,7 @@ model = PeftModel.from_pretrained(
     location
     # args.trained
 )
+model = model.to(device)
 
 print("model is loaded")
 
@@ -62,7 +65,7 @@ inputs = tokenizer.apply_chat_template(
     tokenize=True,
     add_generation_prompt=True,
     return_tensors="pt"
-).to("cuda")
+).to("cuda:0")
 
 print("input is loaded")
 
