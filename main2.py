@@ -25,11 +25,14 @@ worker_data = None
 worker_model = None
 worker_context = None 
 
+initalize = 0
 
 def initialize_worker(data, context):
     # from LLMbase import LLM
     global worker_data, worker_model, worker_context
 
+    print(f"Current Initalize: {initalize}")
+    initalize += 1
     worker_data = data
     worker_model = LLMInference()
     worker_context = context
