@@ -44,6 +44,8 @@ model = PeftModel.from_pretrained(
     # args.trained
 )
 
+print("model is loaded")
+
 messages = [
     {
         "role": "user",
@@ -62,6 +64,8 @@ inputs = tokenizer.apply_chat_template(
     return_tensors="pt"
 ).to("cuda")
 
+print("input is loaded")
+
 
 outputs = model.generate(
     inputs,
@@ -69,6 +73,7 @@ outputs = model.generate(
     temperature=0.7,
 )
 
+print("output is generated")
 
 response = tokenizer.decode(
     outputs[0],
