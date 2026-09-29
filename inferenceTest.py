@@ -2,7 +2,7 @@ from peft import PeftModel
 import torch
 from trl import SFTTrainer
 from peft import LoraConfig
-from main2 import load_data
+#from main2 import load_data
 from transformers import TrainingArguments, DataCollatorForSeq2Seq, AutoModelForCausalLM, AutoTokenizer
 from unsloth import is_bfloat16_supported, FastLanguageModel
 import argparse
