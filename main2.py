@@ -161,10 +161,11 @@ def main():
     ds_art, ds_unlabel, ds_label = load_data()
     print('Number of CPUs in the system: {}'.format(os.cpu_count()))
     
-    indexes = range(0, len(ds_art['train']) // cli_args.index)
+    indexes = range(0, cli_args.index)
     print(f"Processing {len(indexes)} examples.")
     # print(f"Indexes: {list(indexes)}")
 
+    # indexes = range(0, 5)
     
     # args = ds_art
 
