@@ -45,12 +45,20 @@ class LLMInference:
         self.model = self.model.to(self.device)
         
     def run(self, prompt):
+        messages = [
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+        
+        
         inputs = self.tokenizer.apply_chat_template(
-            prompt,
+            messagesds,
             tokenize=True,
             add_generation_prompt=True,
             return_tensors="pt"
-        ).to("cuda:0")
+        ).to(self.device)
         
         outputs = self.model.generate(
             inputs,
