@@ -27,7 +27,7 @@ worker_context = None
 
 
 def initialize_worker(data, context):
-    from LLMbase import LLM
+    # from LLMbase import LLM
     global worker_data, worker_model, worker_context
 
     worker_data = data
@@ -61,7 +61,7 @@ def launch_inference(index):
     
     global worker_data, worker_model, worker_context
     try:
-        print("Launching inference for example index:", index)
+        # print("Launching inference for example index:", index)
         example = worker_data['train'][index]
         question = example["question"]
         answer = example["final_decision"]
@@ -141,7 +141,7 @@ def main():
                         help="Dataset-size divisor: process len(train) // index examples (default: 1, all examples).")
     parser.add_argument("--context", type=bool)
     # parser.add_argument("--checkpoint", help="Local Unsloth/LoRA checkpoint to evaluate on pqa_labeled.")
-    parser.add_argument("--num-samples", type=int, default=100,
+    parser.add_argument("--num-samples", type=int, default=4000,
                         help="Number of labeled examples for checkpoint evaluation (default: 100).")
     cli_args = parser.parse_args()
     if cli_args.index <= 0:
@@ -162,7 +162,7 @@ def main():
     print(f"Indexes: {list(indexes)}")
 
     
-    args = ds_art
+    # args = ds_art
 
     print(cli_args.processes)
     correct = 0
