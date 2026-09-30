@@ -7,7 +7,7 @@ import torch
 import re
 
 from datasets import load_dataset
-from multiprocessing import Pool
+from multiprocessing import Pool, mp
 from timebudget import timebudget
 import argparse
 import os
@@ -170,6 +170,10 @@ def main():
     # args = ds_art
 
     print(cli_args.processes)
+    
+    mp.set_start_method('spawn', force=True)
+    
+    
     correct = 0
     incorrect = 0
     no_worker = 0
