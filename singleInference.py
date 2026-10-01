@@ -11,6 +11,7 @@ from timebudget import timebudget
 import argparse
 import os
 from inferenceTest import LLMInference
+import random
 
 end = perf_counter()
 
@@ -118,9 +119,9 @@ def main():
     correct = 0
     incorrect = 0
     for i in indexes:
-        
-        output = launch_inference(ds_art, worker_model, worker_context, i)
-        print(f"Output for index {i}: {output}")
+        num = random.randint(0, len(ds_art['train']) - 1)
+        output = launch_inference(ds_art, worker_model, worker_context, num)
+        print(f"Output for index {num}: {output}")
         if output == 1:
             correct += 1
         elif output == -1:
