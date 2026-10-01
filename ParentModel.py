@@ -6,9 +6,9 @@ class ParentModel:
     def __init__(self, model_name: str):
         self.model_name = "google/gemma-4-26B-A4B-it"
         self.device = torch.device("cuda")
-        processor = AutoProcessor.from_pretrained(MODEL_ID)
+        processor = AutoProcessor.from_pretrained(self.model_name)
         model = AutoModelForCausalLM.from_pretrained(
-            MODEL_ID,
+            self.model_name,
             dtype="auto",
             device_map=self.device 
         )
