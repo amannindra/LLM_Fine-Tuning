@@ -76,9 +76,10 @@ def launch_inference(ds_art, worker_model, worker_context, index):
             print(f"Index {index}: Incorrect")
             print(f"Answer: {answer}, and got: {content}")
             return -1
-    except Exception as e:
-        print(f"Index {index}: Error during inference: {e}")
+    except Exception:
+        import traceback; traceback.print_exc()
         return 0
+
     
 def main():
     parser = argparse.ArgumentParser()
