@@ -24,7 +24,7 @@ from datasets import load_dataset
 #     args.trained
 # )
 class LLMInference:
-    def __init__(self, fineTune, location = "outputs/checkpoint-60/", ):
+    def __init__(self, fineTune, location = "outputs/checkpoint-60/"):
         self.device = torch.device("cuda")
         self.base_model = AutoModelForCausalLM.from_pretrained(
             "unsloth/Llama-3.2-3B-Instruct"
@@ -34,9 +34,9 @@ class LLMInference:
         )
         self.location = location
         self.model = None
-        
-        self.load_model(self.location)
         self.fineTune = fineTune
+        self.load_model(self.location)
+        
 
         
     def load_model(self, location):
