@@ -164,65 +164,22 @@ def main():
     indexes = range(0, cli_args.index)
     print(f"Processing {len(indexes)} examples.")
     # print(f"Indexes: {list(indexes)}")
-
-    # indexes = range(0, 5)
     
-    # args = ds_art
-
-    print(cli_args.processes)
-    
-    mp.set_start_method('spawn', force=True)
-    
-    
+    count = 0
     correct = 0
     incorrect = 0
-    no_worker = 0
-    with Pool(processes=cli_args.processes, initializer=initialize_worker,initargs=(ds_art,worker_context)) as pool:
-        result = pool.map(launch_inference, indexes)
-        # print(f"Result: {result}")
-        correct += result.count(1)
-        incorrect += result.count(-1)
-        no_worker += result.count(0)
-        total = correct + incorrect
+    for i in indexes:
         
+        output = launch_inference(i)
+        if output == 1:
+            correct += 1
+        elif output == -1:
+            incorrect += 1
+        else:
+            count += 1
     
-    with open("results.json", "w") as f:
-        json.dump(result, f)
-    
-    print(f"Correct: {correct}, Incorrect: {incorrect}, No Worker: {no_worker}, Total Processed: {total}")
-    
-    
-    
-    
-    
-    # run_complex_operations(launch_inference(), range(length), processes_pool)
-    
-    
-    
-    
-    # for i in range(length):
-    #     example = ds_art['train'][i]
-    #     question = example["question"]
-    #     answer = example["final_decision"]
-    #     context = example["context"]["contexts"]
-    #     prompt = make_prompt(question, context)
+    print(f"Correct: {correct}, Incorrect: {incorrect}, No Worker: {count}, Total Processed: {len(indexes)}")
 
-    #     thinking_content, content = model.inference(prompt)
-        
-    #     if content == answer:
-    #         print("Output matches the answer.")
-    #         print(f"Answer: {answer}, and got: {content}")
-    #         correct += 1
-    #     else:
-    #         print("Output does not match the answer.")
-    #         print(f"Answer: {answer}, and got: {content}")
-    #         incorrect += 1
-            
-    #     if i % 10 == 0:
-    #         print(f"Processed {i} examples.")
-            
-    # print(f"Correct: {correct}, Incorrect: {incorrect}, Total: {correct + incorrect}")
-    # print(f"Accuracy: {correct / (correct + incorrect) * 100:.2f}%")
 
     
 if __name__ == "__main__":     

@@ -4,7 +4,7 @@ from trl import SFTTrainer
 from peft import LoraConfig
 #from main2 import load_data
 from transformers import TrainingArguments, DataCollatorForSeq2Seq, AutoModelForCausalLM, AutoTokenizer
-from unsloth import is_bfloat16_supported, FastLanguageModel
+# from unsloth import is_bfloat16_supported, FastLanguageModel
 import argparse
 from pathlib import Path
 from datasets import load_dataset
