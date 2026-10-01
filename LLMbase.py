@@ -33,7 +33,7 @@ class LLM():
             add_generation_prompt=True,
             enable_thinking=True # Switches between thinking and non-thinking modes. Default is True.
         )
-        model_inputs = tokenizer([text], return_tensors="pt").to(self.model.device)
+        model_inputs = self.tokenizer([text], return_tensors="pt").to(self.model.device)
 
         # conduct text completion
         generated_ids = self.model.generate(
