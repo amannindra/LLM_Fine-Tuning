@@ -19,9 +19,7 @@ print(f"Executed in: {elapsed:.6f} seconds")
 print("Imports Loaded")
 
 
-worker_data = data
-worker_model = LLMInference()
-worker_context = context
+
 
 
 
@@ -45,14 +43,13 @@ def load_data():
     print(f"Loaded Datasets: {ds_art}, {ds_unlabel}, {ds_label}")
     return ds_art, ds_unlabel, ds_label
 
-def launch_inference(index):
+def launch_inference(ds_art, worker_model, worker_context, index):
     print(f"Launching index: {index}")
     
-    global worker_data, worker_model, worker_context
     
     try:
         # print("Launching inference for example index:", index)
-        example = worker_data['train'][index]
+        example = ds_art['train'][index]
         question = example["question"]
         answer = example["final_decision"]
         contexted  = example["context"]["contexts"]
@@ -83,53 +80,6 @@ def launch_inference(index):
         print(f"Index {index}: Error during inference: {e}")
         return 0
     
-
-
-# python main2.py --processes 8 --index 3000 --context True
-
-# def evaluate_checkpoint(checkpoint, num_samples):
-
-
-#     model, tokenizer = FastLanguageModel.from_pretrained(
-#         model_name=checkpoint,
-#         max_seq_length=2048,
-#         dtype=None,
-#         load_in_4bit=True,
-#     )
-#     FastLanguageModel.for_inference(model)
-#     dataset = load_dataset("qiaojin/PubMedQA", "pqa_labeled", split="train")
-    
-#     if num_samples > len(dataset):
-#         num_samples = dataset
-    
-#     dataset = dataset.select(range(num_samples))
-#     results = []
-#     for example in dataset:
-#         # Match fine.py's raw training prompt, without the target answer.
-#         # context = "".join(example["context"]["contexts"])
-#         prompt = f"""You are an assistant helping doctors with their questions. You are given the question and the important context you need to answer that question.
-#     Question: {example['question']}
-#     answer:"""
-#         inputs = tokenizer(prompt, return_tensors="pt", truncation=True,
-#                            max_length=2032).to(model.get_input_embeddings().weight.device)
-#         with torch.inference_mode():
-#             output = model.generate(**inputs, max_new_tokens=16, do_sample=False,
-#                                     pad_token_id=tokenizer.eos_token_id)
-#         response = tokenizer.decode(output[0, inputs.input_ids.shape[1]:],
-#                                     skip_special_tokens=True).strip()
-#         match = re.match(r"^(yes|no|maybe)\b", response.lower())
-#         prediction = match.group(1) if match else None
-#         results.append(dict(pubid=example["pubid"], answer=example["final_decision"],
-#                             prediction=prediction, response=response,
-#                             correct=prediction == example["final_decision"]))
-#         print(f"{len(results)}/{len(dataset)}: expected={example['final_decision']} response={response!r}")
-#     with open("checkpoint_results.json", "w") as handle:
-#         json.dump({"checkpoint": checkpoint, "dataset": "pqa_labeled",
-#                    "results": results}, handle, indent=2)
-#     correct = sum(row["correct"] for row in results)
-#     print(f"Accuracy: {correct}/{len(results)} ({correct / len(results):.2%})")
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--processes", type=int, help="Number of processes to use for multiprocessing.")
@@ -156,15 +106,17 @@ def main():
     indexes = range(0, cli_args.index)
     print(f"Processing {len(indexes)} examples.")
     # print(f"Indexes: {list(indexes)}")
-    
-    initialize_worker(ds_art, cli_args.context)
+
+    worker_data = ds_art
+    worker_model = LLMInference()
+    worker_context = False
     
     count = 0
     correct = 0
     incorrect = 0
     for i in indexes:
         
-        output = launch_inference(i)
+        output = launch_inference(ds_art, worker_model, worker_context, i)
         print(f"Output for index {i}: {output}")
         if output == 1:
             correct += 1
