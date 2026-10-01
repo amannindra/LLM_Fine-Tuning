@@ -1,4 +1,3 @@
-from transformers import AutoProcessor, AutoModelForMultimodalLM, AutoTokenizer, AutoModelForCausalLM
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 import torch
@@ -38,7 +37,7 @@ class ParentModel():
         # conduct text completion
         generated_ids = self.model.generate(
             **model_inputs,
-            max_new_tokens=32768
+            max_new_tokens=10
         )
         output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist() 
 
