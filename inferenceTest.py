@@ -48,8 +48,10 @@ class LLMInference:
                 # args.trained
             )
             self.model = self.model.to(self.device)
+            print(f"Loaded fine-tuned model from {location}")
         else:
             self.model = self.base_model.to(self.device)
+            print(f"Loaded base model without fine-tuning")
         
     # def make_prompt(question, context) -> str:
     
