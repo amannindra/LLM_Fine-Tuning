@@ -36,7 +36,7 @@ class LLMInference:
         self.model = None
         
         self.load_model(self.location)
-        self.fineTune = False
+        self.fineTune = fineTune
 
         
     def load_model(self, location):

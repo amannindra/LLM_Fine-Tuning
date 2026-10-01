@@ -111,7 +111,7 @@ def main():
 
     worker_data = ds_art
 
-    worker_model = LLMInference(fineTune = cli_args.fine_tune)
+    worker_model = LLMInference(cli_args.fine_tune)
     worker_context = False
     
     count = 0
