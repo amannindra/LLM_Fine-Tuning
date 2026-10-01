@@ -98,7 +98,7 @@ def evaluate_checkpoint(responce, model):
     
     prompt = make_prompt_with_context(question, contexted, answer, responce)
     
-    return s.inference(prompt)
+    return model.inference(prompt)
       
     
 def main():
@@ -143,7 +143,7 @@ def main():
         num = random.randint(0, len(ds_art['test']) - 1)
         
         output = launch_inference(ds_art, worker_model, worker_context, num)
-        evaluate = evaluate_checkpoint(ds_art, parent, worker_context, num )
+        evaluate = evaluate_checkpoint(output, parent)
         if evaluate == 'yes':
             correct += 1
         elif evaluate == "no":
