@@ -6,16 +6,16 @@ import sys
 
 class LLM():
     def __init__(self):
-        self.model_name = "Qwen/Qwen3-4B"
+        self.model_name = "Qwen/Qwen3-32B"
         # load the tokenizer and the model
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        device = 'cuda' if torch.cuda.is_available() else "cpu"
+
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(
             self.model_name,
             torch_dtype="auto",
-            device_map="cuda"
+            device_map=device
         )
-
-        device = 'cuda' if torch.cuda.is_available() else "cpu"
 
         if device != "cuda":
             print("Cuda not availiable")
@@ -27,16 +27,16 @@ class LLM():
         messages = [
             {"role": "user", "content": prompt}
         ]
-        text = self.tokenizer.apply_chat_template(
+        text = tokenizer.apply_chat_template(
             messages,
             tokenize=False,
             add_generation_prompt=True,
             enable_thinking=True # Switches between thinking and non-thinking modes. Default is True.
         )
-        model_inputs = self.tokenizer([text], return_tensors="pt").to(self.model.device)
+        model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
 
         # conduct text completion
-        generated_ids = self.model.generate(
+        generated_ids = model.generate(
             **model_inputs,
             max_new_tokens=32768
         )
@@ -49,40 +49,10 @@ class LLM():
         except ValueError:
             index = 0
 
-        thinking_content = self.tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
-        content = self.tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
+        thinking_content = tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
+        content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
 
         return thinking_content, content
 
-# prepare the model input
-prompt = "Give me a short introduction to large language model."
-messages = [
-    {"role": "user", "content": prompt}
-]
-text = tokenizer.apply_chat_template(
-    messages,
-    tokenize=False,
-    add_generation_prompt=True,
-    enable_thinking=True # Switches between thinking and non-thinking modes. Default is True.
-)
-model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
-
-# conduct text completion
-generated_ids = model.generate(
-    **model_inputs,
-    max_new_tokens=32768
-)
-output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist() 
-
-# parsing thinking content
-try:
-    # rindex finding 151668 (</think>)
-    index = len(output_ids) - output_ids[::-1].index(151668)
-except ValueError:
-    index = 0
-
-thinking_content = tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
-content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
-
-print("thinking content:", thinking_content)
-print("content:", content)
+s = LLM()
+print(s.inference("Write a short joke about saving RAM."))
