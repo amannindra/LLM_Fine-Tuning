@@ -1,4 +1,6 @@
 from transformers import AutoProcessor, AutoModelForMultimodalLM, AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
 import torch
 import sys
 
