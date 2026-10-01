@@ -70,13 +70,19 @@ def launch_inference(index):
         answer = example["final_decision"]
         contexted  = example["context"]["contexts"]
         
+        print(f"Question: {question}, Answer: {answer}, Context: {contexted}")
+        
         if worker_context:
             
             prompt = make_prompt(question, contexted)
         else:
             prompt = make_prompt(question, "")
             
+        print(f"Prompt: {prompt}")
+            
         thinking_content, content = worker_model.inference(prompt)
+        
+        print(f"Thinking Content: {thinking_content}, Content: {content}")
     
         if content == answer:
             print(f"Index {index}: Correct")
