@@ -3,7 +3,7 @@ start = perf_counter()
 import json
 
 
-from LLMbase import LLM
+from Parent import LLM
 from datasets import load_dataset
 from multiprocessing import Pool
 from timebudget import timebudget

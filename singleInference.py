@@ -19,6 +19,7 @@ elapsed = end - start
 print(f"Executed in: {elapsed:.6f} seconds")
 print("Imports Loaded")
 
+from Parent import ParentModel
 
 
 
@@ -32,14 +33,18 @@ def make_prompt(question, context) -> str:
 
     return s
     
-def make_prompt_with_context(question, context, answer) -> str:
-    s = f"""You are an assistant helping docters with their questions. You are given the question and the important context you need to answer that question. 
+def make_prompt_with_context(question, context, answer, responce) -> str:
+    s = f"""You are an assistant helping docters with their questions. You are given the question, important context, and the answer you need to answer that question. 
     
-    Your job is to answer yes or no if the doctors answer to the question is correct or not. Please give the answer and an examplation.
+    Your job is to answer yes or no if the doctors answer to the question is correct or not.  Please give the answer and an examplation.
+    
+
     Question: {question}
     Context: {context}
     
     Answer: {answer}
+    
+    His answer: {responce}
     
     Respond with exactly one of these labels:
     yes
@@ -79,20 +84,22 @@ def launch_inference(ds_art, worker_model, worker_context, index):
         
         print(f"Thinking Content: {thinking_content}, Content: {content}")
         
-        
+        return content
     
-        # if content == answer:
-        #     print(f"Index {index}: Correct")
-        #     print(f"Answer: {answer}, and got: {content}")
-        #     return 1
-        # else:
-        #     print(f"Index {index}: Incorrect")
-        #     print(f"Answer: {answer}, and got: {content}")
-        #     return -1
     except Exception:
         import traceback; traceback.print_exc()
         return 0
 
+def evaluate_checkpoint(responce, model):
+    example = ds_art['test'][index]
+    question = example["question"]
+    answer = example["final_decision"]
+    contexted  = example["context"]["contexts"]
+    
+    prompt = make_prompt_with_context(question, contexted, answer, responce)
+    
+    return s.inference(prompt)
+      
     
 def main():
     parser = argparse.ArgumentParser()
@@ -127,20 +134,25 @@ def main():
     worker_model = LLMInference(cli_args.fine_tune)
     worker_context = cli_args.context
     
+    parent = ParentModel()
+    
     count = 0
     correct = 0
     incorrect = 0
     for i in indexes:
         num = random.randint(0, len(ds_art['test']) - 1)
+        
         output = launch_inference(ds_art, worker_model, worker_context, num)
-        print(f"Output for index {num}: {output}")
-        if output == 1:
+        evaluate = evaluate_checkpoint(ds_art, parent, worker_context, num )
+        if evaluate == 'yes':
             correct += 1
-        elif output == -1:
+        elif evaluate == "no":
             incorrect += 1
         else:
+            incorrect += 1
             count += 1
-    
+        
+        
     print(f"Correct: {correct}, Incorrect: {incorrect}, No Worker: {count}, Total Processed: {len(indexes)}")
 
     

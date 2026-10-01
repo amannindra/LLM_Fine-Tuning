@@ -4,7 +4,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 import sys
 
-class LLM():
+class ParentModel():
     def __init__(self):
         self.model_name = "Qwen/Qwen3-32B"
         # load the tokenizer and the model
@@ -31,7 +31,7 @@ class LLM():
             messages,
             tokenize=False,
             add_generation_prompt=True,
-            enable_thinking=True # Switches between thinking and non-thinking modes. Default is True.
+            enable_thinking=False
         )
         model_inputs = self.tokenizer([text], return_tensors="pt").to(self.model.device)
 
@@ -54,5 +54,5 @@ class LLM():
 
         return thinking_content, content
 
-s = LLM()
-print(s.inference("Write a short joke about saving RAM."))
+# s = Parent()
+# print(s.inference("Write a short joke about saving RAM."))
