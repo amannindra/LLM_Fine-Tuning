@@ -27,16 +27,16 @@ class LLM():
         messages = [
             {"role": "user", "content": prompt}
         ]
-        text = tokenizer.apply_chat_template(
+        text = self.tokenizer.apply_chat_template(
             messages,
             tokenize=False,
             add_generation_prompt=True,
             enable_thinking=True # Switches between thinking and non-thinking modes. Default is True.
         )
-        model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
+        model_inputs = tokenizer([text], return_tensors="pt").to(self.model.device)
 
         # conduct text completion
-        generated_ids = model.generate(
+        generated_ids = self.model.generate(
             **model_inputs,
             max_new_tokens=32768
         )
@@ -49,8 +49,8 @@ class LLM():
         except ValueError:
             index = 0
 
-        thinking_content = tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
-        content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
+        thinking_content = self.tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
+        content = self.tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
 
         return thinking_content, content
 
