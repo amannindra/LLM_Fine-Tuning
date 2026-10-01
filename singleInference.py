@@ -119,7 +119,7 @@ def main():
     correct = 0
     incorrect = 0
     for i in indexes:
-        num = random.randint(0, len(ds_art['train']) - 1)
+        num = random.randint(0, len(ds_art['test']) - 1)
         output = launch_inference(ds_art, worker_model, worker_context, num)
         print(f"Output for index {num}: {output}")
         if output == 1:
