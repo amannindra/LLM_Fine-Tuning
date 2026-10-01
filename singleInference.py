@@ -50,7 +50,7 @@ def launch_inference(ds_art, worker_model, worker_context, index):
     
     try:
         # print("Launching inference for example index:", index)
-        example = ds_art['train'][index]
+        example = ds_art['test'][index]
         question = example["question"]
         answer = example["final_decision"]
         contexted  = example["context"]["contexts"]
