@@ -19,24 +19,11 @@ print(f"Executed in: {elapsed:.6f} seconds")
 print("Imports Loaded")
 
 
+worker_data = data
+worker_model = LLMInference()
+worker_context = context
 
-worker_data = None
-worker_model = None
-worker_context = None 
 
-initalize = 0
-
-def initialize_worker(data, context):
-    # from LLMbase import LLM
-    global worker_data, worker_model, worker_context
-
-    print(f"Current Initalize: {initalize}")
-    initalize += 1
-    worker_data = data
-    worker_model = LLMInference()
-    worker_context = context
-
-    print("Worker model initialized")
 
 
 def make_prompt(question, context) -> str:
