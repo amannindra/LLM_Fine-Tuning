@@ -12,7 +12,7 @@ ds_art, ds_unlabel, ds_label = load_data()
 
 def format_prompt_function(example):
     question = example["question"]
-    answer = example["final_decision"]
+    answer = example["long_answer"]
     context = ""
     for i in example["context"]["contexts"]:
         context += i
@@ -20,9 +20,8 @@ def format_prompt_function(example):
     example["text"] = f"""You are an assistant helping doctors with their questions. You are given the question and the important context you need to answer that question.
     Question: {question}
     Context: {context}
-    answer: {answer} """
+    long_answer: {answer} """
     
-    # print(f"example: {example}")
     return example
 
 ds_art["train"] = ds_art["train"].map(format_prompt_function, batched = False)

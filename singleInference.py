@@ -27,15 +27,25 @@ print("Imports Loaded")
 
 def make_prompt(question, context) -> str:
     
-    s = f"""Use the medical context below to answer the question. {context}. Question {question}  Respond with exactly one of these labels:
-        yes
-        no
-        maybe
+    s = f"""You are an assistant helping doctors with their questions. Please give the answer and an examplation.
+      Question {question}  Respond with exactly one of these labels:"""
 
-        Answer:"""
-        
     return s
     
+def make_prompt_with_context(question, context, answer) -> str:
+    s = f"""You are an assistant helping docters with their questions. You are given the question and the important context you need to answer that question. 
+    
+    Your job is to answer yes or no if the doctors answer to the question is correct or not. Please give the answer and an examplation.
+    Question: {question}
+    Context: {context}
+    
+    Answer: {answer}
+    
+    Respond with exactly one of these labels:
+    yes
+    no """
+    
+    return s
 
 def load_data():
     ds_art = load_dataset("qiaojin/PubMedQA", "pqa_artificial")
@@ -68,15 +78,17 @@ def launch_inference(ds_art, worker_model, worker_context, index):
         thinking_content, content = worker_model.inference(prompt)
         
         print(f"Thinking Content: {thinking_content}, Content: {content}")
+        
+        
     
-        if content == answer:
-            print(f"Index {index}: Correct")
-            print(f"Answer: {answer}, and got: {content}")
-            return 1
-        else:
-            print(f"Index {index}: Incorrect")
-            print(f"Answer: {answer}, and got: {content}")
-            return -1
+        # if content == answer:
+        #     print(f"Index {index}: Correct")
+        #     print(f"Answer: {answer}, and got: {content}")
+        #     return 1
+        # else:
+        #     print(f"Index {index}: Incorrect")
+        #     print(f"Answer: {answer}, and got: {content}")
+        #     return -1
     except Exception:
         import traceback; traceback.print_exc()
         return 0
