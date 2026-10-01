@@ -1,6 +1,6 @@
 
 from transformers import AutoProcessor, AutoModelForCausalLM
-
+import torch
 
 class ParentModel:
     def __init__(self, model_name: str):
