@@ -90,6 +90,7 @@ def main():
     # parser.add_argument("--checkpoint", help="Local Unsloth/LoRA checkpoint to evaluate on pqa_labeled.")
     parser.add_argument("--num-samples", type=int, default=4000,
                         help="Number of labeled examples for checkpoint evaluation (default: 100).")
+    parser.add_argument("--fine-tune", type=bool, default=False, help="Whether to use fine-tuned model (default: False).")
     cli_args = parser.parse_args()
     if cli_args.index <= 0:
         parser.error("--index must be a positive integer")
@@ -109,7 +110,8 @@ def main():
     # print(f"Indexes: {list(indexes)}")
 
     worker_data = ds_art
-    worker_model = LLMInference()
+
+    worker_model_fineTune = LLMInference(fineTune = cli_args.fine_tune)
     worker_context = False
     
     count = 0

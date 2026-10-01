@@ -24,7 +24,7 @@ from datasets import load_dataset
 #     args.trained
 # )
 class LLMInference:
-    def __init__(self,location = "outputs/checkpoint-60/"):
+    def __init__(self, fineTune, location = "outputs/checkpoint-60/", ):
         self.device = torch.device("cuda")
         self.base_model = AutoModelForCausalLM.from_pretrained(
             "unsloth/Llama-3.2-3B-Instruct"
@@ -34,17 +34,22 @@ class LLMInference:
         )
         self.location = location
         self.model = None
-        self.load_model(self.location)
         
+        self.load_model(self.location)
+        self.fineTune = False
 
         
     def load_model(self, location):
-        self.model = PeftModel.from_pretrained(
-            self.base_model,
-            location
-            # args.trained
-        )
-        self.model = self.model.to(self.device)
+        
+        if self.fineTune: 
+            self.model = PeftModel.from_pretrained(
+                self.base_model,
+                location
+                # args.trained
+            )
+            self.model = self.model.to(self.device)
+        else:
+            self.model = self.base_model.to(self.device)
         
     # def make_prompt(question, context) -> str:
     
