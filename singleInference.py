@@ -170,6 +170,7 @@ def main():
     for i in indexes:
         
         output = launch_inference(i)
+        print(f"Output for index {i}: {output}")
         if output == 1:
             correct += 1
         elif output == -1:
