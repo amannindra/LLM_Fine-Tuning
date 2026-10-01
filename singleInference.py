@@ -148,7 +148,7 @@ def main():
     parser.add_argument("--processes", type=int, help="Number of processes to use for multiprocessing.")
     parser.add_argument("--index", type=int, default=10,
                         help="Dataset-size divisor: process len(train) // index examples (default: 1, all examples).")
-    parser.add_argument("--context", type=bool)
+    parser.add_argument("--context", type=bool, default=False, help="Whether to include context in the prompt (default: True).")
     # parser.add_argument("--checkpoint", help="Local Unsloth/LoRA checkpoint to evaluate on pqa_labeled.")
     parser.add_argument("--num-samples", type=int, default=4000,
                         help="Number of labeled examples for checkpoint evaluation (default: 100).")
@@ -169,6 +169,8 @@ def main():
     indexes = range(0, cli_args.index)
     print(f"Processing {len(indexes)} examples.")
     # print(f"Indexes: {list(indexes)}")
+    
+    initialize_worker(ds_art, cli_args.context)
     
     count = 0
     correct = 0
