@@ -7,7 +7,6 @@ import torch
 import re
 
 from datasets import load_dataset
-from multiprocessing import Pool, mp
 from timebudget import timebudget
 import argparse
 import os
@@ -180,6 +179,7 @@ def main():
     
     print(f"Correct: {correct}, Incorrect: {incorrect}, No Worker: {count}, Total Processed: {len(indexes)}")
 
+    
 
     
 if __name__ == "__main__":     
