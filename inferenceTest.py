@@ -71,19 +71,20 @@ class LLMInference:
             messages,
             tokenize=True,
             add_generation_prompt=True,
-            return_tensors="pt"
+            return_tensors="pt",
+            return_dict=True
         ).to(self.device)
-        
+
         outputs = self.model.generate(
-            inputs,
-            max_new_tokens=2048,
-            temperature=0.7,
+            **inputs,
+            max_new_tokens=10,
+            do_sample=False,
         )
-        
+
         response = self.tokenizer.decode(
-            outputs[0],
+            outputs[0][inputs["input_ids"].shape[1]:],
             skip_special_tokens=True
-        )
+        ).strip().lower()
 
         print(f"final: {response}")
         return "No thinking", response
