@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=LLMtestcases
-#SBATCH --partition=pi.ckim103 
-#SBATCH --gres=gpu:h100:1
+#SBATCH --partition=cenvalarc.gpu
+#SBATCH --gres=gpu:nvidia_h200_nvl:1
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=64G
 #SBATCH --time=2-00:00:00

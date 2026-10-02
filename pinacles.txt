@@ -1,5 +1,4 @@
 
-
 Used to allocate a slurm job 
 salloc   --partition=cenvalarc.gpu  --nodes=1   --ntasks-per-node=2   --cpus-per-task=28   --mem=96G   --gres=gpu:l40s:1   --time=24:00:00
 
@@ -14,9 +13,172 @@ sinfo -N -O "nodehost:18,partition:20,statecompact:8,gres:24,gresused:24" | grep
 Check if any GPUs in my server: 
 squeue -u anindra
 
+Each the job
+
+scontrol show job 352764
+
 Check who has used this node and what exactly they are using
 
 squeue -w gnode015 -o "%.10i %.9P %.20j %.8u %.2t %.10M %.20b"
+
+========================
+UC MERCED GPU NODES
+========================
+
+1. A100 GPU Nodes
+   Partition: gpu
+   Number of nodes: 8
+   GPUs per node: 2x NVIDIA A100
+   GPU memory: 40 GB each
+   Total GPU memory per node: 80 GB
+   System RAM per node: 256 GB
+   CPU: 2x Intel Xeon Gold 6330, 28 cores each
+   Total CPU cores: 56
+   Local storage: 1 TB NVMe
+
+   Request 1 GPU:
+   --partition=gpu
+   --gres=gpu:a100:1
+
+
+2. L40S GPU Nodes
+   Partition: cenvalarc.gpu
+   Nodes: gnode017 - gnode024
+   Number of nodes: 8
+   GPUs per node: 2x NVIDIA L40S
+   GPU memory: 48 GB each
+   Total GPU memory per node: 96 GB
+   System RAM per node: 256 GB
+   CPU: 2x Intel Xeon Gold 6530, 32 cores each
+   Total CPU cores: 64
+   Local storage: 1 TB NVMe
+
+   Request 1 GPU:
+   --partition=cenvalarc.gpu
+   --gres=gpu:l40s:1
+
+
+3. H200 GPU Nodes
+   Partition: cenvalarc.gpu
+   Nodes: gnode026 - gnode029
+   Number of nodes: 4
+   GPUs per node: 2x NVIDIA H200 NVL
+   GPU memory: 141 GB each
+   Total GPU memory per node: 282 GB
+   System RAM per node: 256 GB
+   CPU: 2x Intel Xeon Gold 6530, 32 cores each
+   Total CPU cores: 64
+   Local storage: 1 TB NVMe
+
+   Request 1 GPU:
+   --partition=cenvalarc.gpu
+   --gres=gpu:nvidia_h200_nvl:1
+
+
+========================
+ALLOCATE A SLURM JOB
+========================
+
+L40S:
+
+salloc \
+  --partition=cenvalarc.gpu \
+  --nodes=1 \
+  --ntasks-per-node=2 \
+  --cpus-per-task=28 \
+  --mem=96G \
+  --gres=gpu:l40s:1 \
+  --time=24:00:00
+
+
+H200:
+
+salloc \
+  --partition=cenvalarc.gpu \
+  --nodes=1 \
+  --ntasks-per-node=2 \
+  --cpus-per-task=28 \
+  --mem=96G \
+  --gres=gpu:nvidia_h200_nvl:1 \
+  --time=24:00:00
+
+
+========================
+TEST GPU
+========================
+
+salloc \
+  --partition=test \
+  --nodes=1 \
+  --ntasks-per-node=2 \
+  --cpus-per-task=28 \
+  --mem=96G \
+  --gres=gpu:a100:1 \
+  --time=01:00:00
+
+
+========================
+SEE GPU NODES / AVAILABILITY
+========================
+
+Show idle GPU nodes:
+
+sinfo -N -O "nodehost:18,statecompact:8,gres:24,gresused:24" \
+  | grep -i gpu \
+  | grep -i idle
+
+Show partition too:
+
+sinfo -N -O "nodehost:18,partition:20,statecompact:8,gres:24,gresused:24" \
+  | grep -i gpu \
+  | grep -i idle
+
+
+========================
+CHECK MY JOBS
+========================
+
+squeue -u anindra
+
+
+========================
+CHECK A SPECIFIC JOB
+========================
+
+scontrol show job 352764
+
+
+========================
+CHECK WHO IS USING A NODE
+========================
+
+squeue -w gnode015 \
+  -o "%.10i %.9P %.20j %.8u %.2t %.10M %.20b"
+
+
+========================
+QUICK GPU REFERENCE
+========================
+
+A100:
+  40 GB VRAM / GPU
+  2 GPUs / node
+  80 GB total VRAM / node
+  256 GB system RAM
+
+L40S:
+  48 GB VRAM / GPU
+  2 GPUs / node
+  96 GB total VRAM / node
+  256 GB system RAM
+  gnode017-024
+
+H200 NVL:
+  141 GB VRAM / GPU
+  2 GPUs / node
+  282 GB total VRAM / node
+  256 GB system RAM
+  gnode026-029
 
 Found the queue table on that page. Here's what it says:
 
