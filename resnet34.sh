@@ -19,7 +19,6 @@ mkdir -p logs Testcases
 # e.g. the broken MPS daemon (CUDA error 805) that killed jobs 170777/170778.
 unset CUDA_MPS_PIPE_DIRECTORY CUDA_MPS_LOG_DIRECTORY
 echo "=== GPU preflight on $(hostname) ==="
-nvidia-smi || exit 1
 python -c "import torch; assert torch.cuda.is_available(), 'torch cannot initialize CUDA'; print('CUDA OK:', torch.cuda.get_device_name(0))" || exit 1
 
 # Four test cases, run one after another (each loads the student + the Qwen judge,
