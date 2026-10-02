@@ -89,7 +89,7 @@ def launch_inference(dataset, worker_model, worker_context, index, max_new_token
         else:
             prompt = make_prompt(question, "")
 
-        print(f"Prompt: {prompt}")
+        # print(f"Prompt: {prompt}")
 
         thinking_content, content = worker_model.inference(prompt, max_new_tokens=max_new_tokens)
 

@@ -1,5 +1,5 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
-
+transformers.logging.set_verbosity_error()
 import torch
 import sys
 
