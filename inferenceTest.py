@@ -93,7 +93,7 @@ class LLMInference:
             skip_special_tokens=True
         ).strip().lower()
 
-        print(f"final: {response}")
+        # print(f"final: {response}")
         return "No thinking", response
                 
 # ds_art = load_dataset("qiaojin/PubMedQA", "pqa_artificial")
