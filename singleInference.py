@@ -82,7 +82,7 @@ def launch_inference(dataset, worker_model, worker_context, index, max_new_token
         question = example["question"]
         contexted = example["context"]["contexts"]
 
-        print(f"Question: {question}, Context: {contexted}")
+        # print(f"Question: {question}, Context: {contexted}")
 
         if worker_context:
             prompt = make_prompt(question, contexted)
@@ -93,7 +93,7 @@ def launch_inference(dataset, worker_model, worker_context, index, max_new_token
 
         thinking_content, content = worker_model.inference(prompt, max_new_tokens=max_new_tokens)
 
-        print(f"Thinking Content: {thinking_content}, Content: {content}")
+        # print(f"Thinking Content: {thinking_content}, Content: {content}")
 
         return content
 
@@ -175,7 +175,7 @@ def main():
         else:
             unclear += 1
 
-        print(f"Output for index {num}: judge verdict {verdict!r}")
+        print(f"Output for index {num}: judge verdict {verdict!r}, index {i + 1}/{len(indexes)}")
 
     print(f"Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, Failed: {failed}, Total Processed: {len(indexes)}")
 
