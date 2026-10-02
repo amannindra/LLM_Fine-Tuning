@@ -159,6 +159,8 @@ def main():
     correct = 0
     incorrect = 0
     unclear = 0
+    
+    start = perf_counter()
     for i in indexes:
         num = random.randint(0, size - 1)
 
@@ -177,7 +179,14 @@ def main():
 
         print(f"Output for index {num}: judge verdict {verdict!r}, index {i + 1}/{len(indexes)}")
 
+
     print(f"Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, Failed: {failed}, Total Processed: {len(indexes)}")
+    
+    end = perf_counter()
+
+    elapsed = end - start
+    print(f"Executed in: {elapsed:.6f} seconds")
+    print(f"Average time per example: {elapsed / len(indexes):.6f} seconds")
 
 
 if __name__ == "__main__":
