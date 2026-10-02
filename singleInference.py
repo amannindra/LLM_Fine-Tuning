@@ -178,9 +178,10 @@ def main():
             unclear += 1
 
         print(f"Output for index {num}: judge verdict {verdict!r}, index {i + 1}/{len(indexes)}")
+        print(f"Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, Failed: {failed}, Total Processed: {len(indexes)}")
 
 
-    print(f"Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, Failed: {failed}, Total Processed: {len(indexes)}")
+    print(f"FINAL: Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, Failed: {failed}, Total Processed: {len(indexes)}")
     
     end = perf_counter()
 
