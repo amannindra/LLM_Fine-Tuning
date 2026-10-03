@@ -29,13 +29,13 @@ N=100
 python singleInference.py --index $N --output Testcases/base_nocontext.txt
 
 # 2. Base model + context
-python singleInference.py --index $N --context --output Testcases/base_context.txt
+python singleInference.py --index $N --context True --output Testcases/base_context.txt
 
 # 3. Fine-tuned model, no context
 python singleInference.py --index $N --fine-tune --output Testcases/finetuned_nocontext.txt
 
 # 4. Fine-tuned model + context
-python singleInference.py --index $N --fine-tune --context --output Testcases/finetuned_context.txt
+python singleInference.py --index $N --fine-tune True --context True --output Testcases/finetuned_context.txt
 
 echo "=== Summaries ==="
 grep -H "^FINAL:" Testcases/*.txt
