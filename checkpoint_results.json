@@ -1,0 +1,706 @@
+{
+  "checkpoint": "outputs/checkpoint-60",
+  "dataset": "pqa_labeled",
+  "results": [
+    {
+      "pubid": 21645374,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 16418930,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 9488747,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  8 infants were admitted with a similar clinical picture: pallor,",
+      "correct": true
+    },
+    {
+      "pubid": 17208539,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  yes  no  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 10808977,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 23831910,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 26037986,
+      "answer": "maybe",
+      "prediction": "no",
+      "response": "no  in 30 days  in 1 year  no  yes",
+      "correct": false
+    },
+    {
+      "pubid": 26852225,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 17113061,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  1  yes  2  no  3  yes",
+      "correct": true
+    },
+    {
+      "pubid": 10966337,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  no  no  no  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 25432938,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 18847643,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  1   yes   no   no   no   no   no",
+      "correct": true
+    },
+    {
+      "pubid": 18239988,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 25957366,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  important context: The main objective of this study was to determine whether automated",
+      "correct": true
+    },
+    {
+      "pubid": 24866606,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 26578404,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 11729377,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  yes  no  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 17096624,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 22694248,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 22990761,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 19394934,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  yes  no  yes  yes  no  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 11481599,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  1  yes  2  no  3  yes",
+      "correct": false
+    },
+    {
+      "pubid": 21669959,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 23806388,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 17919952,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  yes  no  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 10966943,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 23690198,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  no  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 17940352,
+      "answer": "maybe",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 20537205,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  no  maybe  not given  none\n    question: Is hal",
+      "correct": true
+    },
+    {
+      "pubid": 28707539,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 7482275,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 24183388,
+      "answer": "maybe",
+      "prediction": "yes",
+      "response": "yes  yes  yes  no  no  no  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 9645785,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 26298839,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  1  yes  2  yes  3  yes",
+      "correct": false
+    },
+    {
+      "pubid": 24153338,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 18534072,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 8847047,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 10575390,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  1  no  2  yes  3  no",
+      "correct": true
+    },
+    {
+      "pubid": 20084845,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 15703931,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 18269157,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 25489696,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 14599616,
+      "answer": "maybe",
+      "prediction": "no",
+      "response": "no  answer: yes  answer: yes  answer: yes  answer:",
+      "correct": false
+    },
+    {
+      "pubid": 22537902,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  yes  no  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 19054501,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  yes  no  yes  no  yes  no  yes",
+      "correct": false
+    },
+    {
+      "pubid": 16432652,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 19504993,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 20571467,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  yes  undetermined  no  yes  undetermined  yes",
+      "correct": false
+    },
+    {
+      "pubid": 24237112,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 21402341,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 20082356,
+      "answer": "maybe",
+      "prediction": "yes",
+      "response": "yes  answer: yes  answer: yes  answer: yes  answer:",
+      "correct": false
+    },
+    {
+      "pubid": 26606599,
+      "answer": "maybe",
+      "prediction": "no",
+      "response": "no  yes  no  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 11340218,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  yes  no  yes  no  yes  no  yes",
+      "correct": true
+    },
+    {
+      "pubid": 25481573,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 25277731,
+      "answer": "maybe",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 25475395,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  1  no  2  yes  3  yes",
+      "correct": false
+    },
+    {
+      "pubid": 23177368,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  1. The patients who received IBR were on average younger than",
+      "correct": true
+    },
+    {
+      "pubid": 17179167,
+      "answer": "maybe",
+      "prediction": "no",
+      "response": "no  yes  no  yes  no  yes  no  yes",
+      "correct": false
+    },
+    {
+      "pubid": 14612308,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 27491658,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 19822586,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 27643961,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  1  yes   no  2  no   yes",
+      "correct": true
+    },
+    {
+      "pubid": 23539689,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 22453060,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 22227642,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 12380309,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  yes  maybe  no  yes  no  no  yes",
+      "correct": true
+    },
+    {
+      "pubid": 22186742,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  yes  maybe\n    question: Is colonoscopy after acute divert",
+      "correct": true
+    },
+    {
+      "pubid": 22188074,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 27989969,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  1/1\n    question: Is the use of a neuro",
+      "correct": true
+    },
+    {
+      "pubid": 18607272,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 18235194,
+      "answer": "maybe",
+      "prediction": "no",
+      "response": "no  yes  no  yes  no  yes  no  yes",
+      "correct": false
+    },
+    {
+      "pubid": 18049437,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  yes  no answer  yes  no answer  no  yes",
+      "correct": false
+    },
+    {
+      "pubid": 15597845,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  both  cell  lines  showed  a  significant  additive",
+      "correct": true
+    },
+    {
+      "pubid": 24996865,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 23361217,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  figure 2  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 17489316,
+      "answer": "maybe",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 14518645,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  answer: yes  answer: yes  answer: yes  answer:",
+      "correct": false
+    },
+    {
+      "pubid": 20337202,
+      "answer": "maybe",
+      "prediction": "no",
+      "response": "no  in  35.7%  of  cases  were",
+      "correct": false
+    },
+    {
+      "pubid": 26449554,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 26215326,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 29112560,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  1  no  0  yes  1  yes",
+      "correct": false
+    },
+    {
+      "pubid": 24315783,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  7/8  possible  1/8  doubtful",
+      "correct": true
+    },
+    {
+      "pubid": 9381529,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 8985020,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 26708803,
+      "answer": "maybe",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 22427593,
+      "answer": "maybe",
+      "prediction": "yes",
+      "response": "yes  yes  no  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 11570976,
+      "answer": "maybe",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 19757704,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  yes  no  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 27592038,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 27044366,
+      "answer": "maybe",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 9792366,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 17562682,
+      "answer": "maybe",
+      "prediction": "no",
+      "response": "no  1.6  4  0  0",
+      "correct": false
+    },
+    {
+      "pubid": 15800018,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 14978612,
+      "answer": "yes",
+      "prediction": "no",
+      "response": "no  yes  no  yes  no  no  yes  no",
+      "correct": false
+    },
+    {
+      "pubid": 18843057,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 23076787,
+      "answer": "no",
+      "prediction": "no",
+      "response": "no  yes  no  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 9199905,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 23999452,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    },
+    {
+      "pubid": 22534881,
+      "answer": "no",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": false
+    },
+    {
+      "pubid": 24785562,
+      "answer": "yes",
+      "prediction": "yes",
+      "response": "yes  yes  yes  yes  yes  yes  yes  yes",
+      "correct": true
+    }
+  ]
+}

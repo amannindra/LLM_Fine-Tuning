@@ -12,6 +12,8 @@ class ParentModel:
             dtype="auto",
             device_map=self.device 
         )
+        
+        
 
     def load_model(self):
         raise NotImplementedError("Subclasses should implement this method.")
