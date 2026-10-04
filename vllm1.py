@@ -1,5 +1,6 @@
 from vllm import LLM, SamplingParams
-
+from time import time
+print("Finished Importing")
 
 prompts = [
     "Hello, my name is",
@@ -8,11 +9,15 @@ prompts = [
     "The future of AI is",
 ]
 sampling_params = SamplingParams(temperature=0.8, top_p=0.95)
+print("Sampling completed")
 
 llm = LLM(model="facebook/opt-125m")
 
+print("LLM Launched")
+
 
 outputs = llm.generate(prompts, sampling_params)
+
 
 for output in outputs:
     prompt = output.prompt
