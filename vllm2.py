@@ -92,7 +92,7 @@ def main():
     parser.add_argument("--index", type=int, default=1000,
                         help="Number of random examples to evaluate (default: 10).")
     parser.add_argument("--context", action="store_true", help="Include the context in the student's prompt.")
-    parser.add_argument("--num-samples", type=int, default=100,
+    parser.add_argument("--num-samples", type=int, default=10,
                         help="Number of labeled examples for checkpoint evaluation (default: 4000).")
     parser.add_argument("--fine-tune", action="store_true", help="Use the fine-tuned checkpoint instead of the base model.")
     parser.add_argument("--max-new-tokens", type=int, default=300,

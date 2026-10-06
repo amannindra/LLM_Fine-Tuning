@@ -66,7 +66,7 @@ class LLMInference:
             
     #     return s
         
-    def inference(self, prompt, max_new_tokens=10):
+    def inference(self, prompt):
         # prompt = self.make_prompt(prompt)
         messages = [
         {
@@ -86,7 +86,7 @@ class LLMInference:
 
         outputs = self.model.generate(
             **inputs,
-            max_new_tokens=max_new_tokens,
+            max_new_tokens=self.max_new_tokens,
             do_sample=False,
         )
 

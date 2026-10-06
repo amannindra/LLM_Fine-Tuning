@@ -74,7 +74,7 @@ def load_data():
     return ds_art, ds_unlabel, ds_label
 
 
-def launch_inference(dataset, worker_model, worker_context, index, max_new_tokens):
+def launch_inference(dataset, worker_model, worker_context, index):
     """Returns the student's explanation, or None if inference failed."""
     print(f"Launching index: {index}")
 
@@ -92,7 +92,7 @@ def launch_inference(dataset, worker_model, worker_context, index, max_new_token
 
         # print(f"Prompt: {prompt}")
 
-        thinking_content, content = worker_model.inference(prompt, max_new_tokens=max_new_tokens)
+        thinking_content, content = worker_model.inference(prompt)
 
         # print(f"Thinking Content: {thinking_content}, Content: {content}")
 
@@ -142,7 +142,7 @@ def main():
     parser.add_argument("--index", type=int, default=1000,
                         help="Number of random examples to evaluate (default: 10).")
     parser.add_argument("--context", action="store_true", help="Include the context in the student's prompt.")
-    parser.add_argument("--num-samples", type=int, default=100,
+    parser.add_argument("--num-samples", type=int, default=10,
                         help="Number of labeled examples for checkpoint evaluation (default: 4000).")
     parser.add_argument("--fine-tune", action="store_true", help="Use the fine-tuned checkpoint instead of the base model.")
     parser.add_argument("--max-new-tokens", type=int, default=300,
@@ -171,7 +171,7 @@ def main():
     # print(f"Processing {len(indexes)} examples.")
     # print(f"Fine-tuned: {cli_args.fine_tune}, Context: {cli_args.context}")
 
-    worker_model = LLMInference(cli_args.fine_tune)
+    worker_model = LLMInference(cli_args.fine_tune, cli_args.max_new_tokens)
     worker_context = cli_args.context
 
     # from Parent import ParentModel
@@ -195,7 +195,7 @@ def main():
     start = perf_counter()
     for index, num in enumerate(arr):
         
-        explanation = launch_inference(ds_art, worker_model, worker_context, index, cli_args.max_new_tokens)
+        explanation = launch_inference(ds_art, worker_model, worker_context, num)
         print(f"{index}/{len(arr)}, index: {num}: {explanation}")
         
         # if explanation is None:
