@@ -12,6 +12,7 @@ import argparse
 import os
 from inferenceTest import LLMInference
 import random
+import numpy as np
 
 end = perf_counter()
 
@@ -33,9 +34,9 @@ def make_prompt(question, context) -> str:
         Question: {question}
         """
 
-    s += """Give a detailed explanation of your reasoning, then finish with your final answer: yes, no, or maybe.
+    s += """Give a detailed explanation of your reasoning. Make sure to provide a explanation with a maximum of 300 tokens.
 
-        Explanation:"""
+        Explanation: """
 
     return s
 
@@ -117,13 +118,31 @@ def evaluate_checkpoint(dataset, index, judge_model, explanation):
     _, content = judge_model.inference(prompt)
     return normalize(content)
 
-def parse_arg2():
+# def parse_arg2():
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--processes", type=int, help="Number of processes to use for multiprocessing.")
+    # parser.add_argument("--index", type=int, default=1000,
+    #                     help="Number of random examples to evaluate (default: 10).")
+    # parser.add_argument("--context", action="store_true", help="Include the context in the student's prompt.")
+    # parser.add_argument("--num-samples", type=int, default=100,
+    #                     help="Number of labeled examples for checkpoint evaluation (default: 4000).")
+    # parser.add_argument("--fine-tune", action="store_true", help="Use the fine-tuned checkpoint instead of the base model.")
+    # parser.add_argument("--max-new-tokens", type=int, default=300,
+    #                     help="Max length of the student's explanation (default: 300).")
+    # parser.add_argument("--seed", type=int, default=0, help="Seed for choosing examples (default: 0).")
+    # parser.add_argument("--output", help="Write per-example results and the final summary to this .txt file.")
+
+    # return parser.parse_args()
+    
+
+def main():
+  
     parser = argparse.ArgumentParser()
     parser.add_argument("--processes", type=int, help="Number of processes to use for multiprocessing.")
-    parser.add_argument("--index", type=int, default=10,
+    parser.add_argument("--index", type=int, default=1000,
                         help="Number of random examples to evaluate (default: 10).")
     parser.add_argument("--context", action="store_true", help="Include the context in the student's prompt.")
-    parser.add_argument("--num-samples", type=int, default=4000,
+    parser.add_argument("--num-samples", type=int, default=100,
                         help="Number of labeled examples for checkpoint evaluation (default: 4000).")
     parser.add_argument("--fine-tune", action="store_true", help="Use the fine-tuned checkpoint instead of the base model.")
     parser.add_argument("--max-new-tokens", type=int, default=300,
@@ -131,14 +150,9 @@ def parse_arg2():
     parser.add_argument("--seed", type=int, default=0, help="Seed for choosing examples (default: 0).")
     parser.add_argument("--output", help="Write per-example results and the final summary to this .txt file.")
 
-    return parser.parse_args()
+    cli_args = parser.parse_args()
     
-
-def main():
-  
-    cli_args = parse_arg2()
-    
-    sys.exit(0)
+    # sys.exit(0)
     
     if cli_args.index <= 0:
         parser.error("--index must be a positive integer")
@@ -151,15 +165,17 @@ def main():
     ds_art, ds_unlabel, ds_label = load_data()
     print('Number of CPUs in the system: {}'.format(os.cpu_count()))
 
-    indexes = range(0, cli_args.index)
-    print(f"Processing {len(indexes)} examples.")
-    print(f"Fine-tuned: {cli_args.fine_tune}, Context: {cli_args.context}")
+    rng = np.random.default_rng(cli_args.seed)
+    arr = rng.choice(len(ds_art["train"]), size=cli_args.num_samples, replace=False)
+    print(arr)
+    # print(f"Processing {len(indexes)} examples.")
+    # print(f"Fine-tuned: {cli_args.fine_tune}, Context: {cli_args.context}")
 
     worker_model = LLMInference(cli_args.fine_tune)
     worker_context = cli_args.context
 
-    from Parent import ParentModel
-    parent = ParentModel()
+    # from Parent import ParentModel
+    # parent = ParentModel()
 
     random.seed(cli_args.seed)
     size = len(ds_art['train'])
@@ -174,19 +190,20 @@ def main():
         os.makedirs(os.path.dirname(cli_args.output) or ".", exist_ok=True)
         out = open(cli_args.output, "w")
         out.write(f"Fine-tuned: {cli_args.fine_tune}, Context: {cli_args.context}, "
-                  f"Seed: {cli_args.seed}, Examples: {len(indexes)}\n\n")
+                  f"Seed: {cli_args.seed}, Examples: {len(arr)}\n\n")
 
     start = perf_counter()
-    for i in indexes:
-        num = random.randint(0, size - 1)
-
-        explanation = launch_inference(ds_art, worker_model, worker_context, num, cli_args.max_new_tokens)
-        if explanation is None:
-            failed += 1
-            if out:
-                out.write(f"[{i + 1}/{len(indexes)}] index {num}: inference failed\n\n")
-                out.flush()
-            continue
+    for index, num in enumerate(arr):
+        
+        explanation = launch_inference(ds_art, worker_model, worker_context, index, cli_args.max_new_tokens)
+        print(f"{index}/{len(arr)}, index: {num}: {explanation}")
+        
+        # if explanation is None:
+        #     failed += 1
+        #     if out:
+        #         out.write(f"[{i + 1}/{len(indexes)}] index {num}: inference failed\n\n")
+        #         out.flush()
+        #     continue
 
         # verdict = evaluate_checkpoint(ds_art, num, parent, explanation)
         # if verdict == "yes":
@@ -211,13 +228,13 @@ def main():
 
     elapsed = end - start
     print(f"Executed in: {elapsed:.6f} seconds")
-    print(f"Average time per example: {elapsed / len(indexes):.6f} seconds")
+    print(f"Average time per example: {elapsed / len(arr):.6f} seconds")
 
-    if out:
-        out.write(f"FINAL: Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, "
-                  f"Failed: {failed}, Total Processed: {len(indexes)}\n")
-        out.write(f"Executed in: {elapsed:.6f} seconds\n")
-        out.close()
+    # if out:
+    #     out.write(f"FINAL: Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, "
+    #               f"Failed: {failed}, Total Processed: {len(indexes)}\n")
+    #     out.write(f"Executed in: {elapsed:.6f} seconds\n")
+    #     out.close()
 
 
 if __name__ == "__main__":
