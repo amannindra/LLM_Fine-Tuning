@@ -178,7 +178,7 @@ def main():
         
         
     
-    with open("filename2.txt", "w") as file:
+    with open("filename3.txt", "w") as file:
         file.write(out)
 
 if __name__ == "__main__":

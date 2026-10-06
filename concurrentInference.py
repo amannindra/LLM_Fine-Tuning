@@ -191,12 +191,23 @@ def main():
         out = open(cli_args.output, "w")
         out.write(f"Fine-tuned: {cli_args.fine_tune}, Context: {cli_args.context}, "
                   f"Seed: {cli_args.seed}, Examples: {len(arr)}\n\n")
-
-    start = perf_counter()
-    for index, num in enumerate(arr):
         
-        explanation = launch_inference(ds_art, worker_model, worker_context, num)
-        print(f"{index}/{len(arr)}, index: {num}: {explanation}")
+    s = 0
+    
+    for index, num in enumerate(arr): 
+        example = dataset['train'][index]
+        question = example["question"]
+        contexted = example["context"]["contexts"]
+        
+        prompt = make_prompt(question, "")
+        start = perf_counter()
+        thinking_content, content = worker_model.inference(prompt)
+        end = perf_counter()
+        
+        s += (end - start)
+        
+        # explanation = launch_inference(ds_art, worker_model, worker_context, num)
+        # print(f"{index}/{len(arr)}, index: {num}: {explanation}")
         
         # if explanation is None:
         #     failed += 1
@@ -224,11 +235,11 @@ def main():
 
     # print(f"FINAL: Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, Failed: {failed}, Total Processed: {len(indexes)}")
     
-    end = perf_counter()
+   
 
-    elapsed = end - start
-    print(f"Executed in: {elapsed:.6f} seconds")
-    print(f"Average time per example: {elapsed / len(arr):.6f} seconds")
+    # elapsed = end - start
+    print(f"Executed in: {s:.6f} seconds")
+    print(f"Average time per example: {s / len(arr):.6f} seconds")
 
     # if out:
     #     out.write(f"FINAL: Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, "
