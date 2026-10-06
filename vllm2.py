@@ -121,8 +121,8 @@ def main():
     print('Number of CPUs in the system: {}'.format(os.cpu_count()))
     
 
-    sampling_params = SamplingParams(temperature=0.8,
-                                     top_p=0.95,
+    sampling_params = SamplingParams(temperature=0.0,
+                                    #  top_p=0.95,
                                      max_tokens=cli_args.max_new_tokens)
     
     # random_index = random.randint(0, cli_args(num-samples))

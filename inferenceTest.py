@@ -28,12 +28,12 @@ class LLMInference:
         self.device = torch.device("cuda")
         self.max_tokens = max_tokens
         self.base_model = AutoModelForCausalLM.from_pretrained(
-            "unsloth/Llama-3.2-3B-Instruct"
-            max_tokens = self.max_tokens
+            "unsloth/Llama-3.2-3B-Instruct",
         )
         self.tokenizer = AutoTokenizer.from_pretrained(
             "unsloth/Llama-3.2-3B-Instruct"
         )
+        
         self.location = location
         self.model = None
         self.fineTune = fineTune
@@ -54,6 +54,7 @@ class LLMInference:
         else:
             self.model = self.base_model.to(self.device)
             print(f"Loaded base model without fine-tuning")
+        self.model.eval()
         
     # def make_prompt(question, context) -> str:
     
@@ -86,7 +87,7 @@ class LLMInference:
 
         outputs = self.model.generate(
             **inputs,
-            max_new_tokens=self.max_new_tokens,
+            max_new_tokens=self.max_tokens,
             do_sample=False,
         )
 

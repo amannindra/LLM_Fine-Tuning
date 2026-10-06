@@ -193,49 +193,49 @@ def main():
                   f"Seed: {cli_args.seed}, Examples: {len(arr)}\n\n")
         
     s = 0
+    with torch.inference_mode():
+        for index, num in enumerate(arr): 
+            example = dataset['train'][index]
+            question = example["question"]
+            contexted = example["context"]["contexts"]
+            
+            prompt = make_prompt(question, "")
+            start = perf_counter()
+            thinking_content, content = worker_model.inference(prompt)
+            end = perf_counter()
+            
+            s += (end - start)
+            
+            # explanation = launch_inference(ds_art, worker_model, worker_context, num)
+            # print(f"{index}/{len(arr)}, index: {num}: {explanation}")
+            
+            # if explanation is None:
+            #     failed += 1
+            #     if out:
+            #         out.write(f"[{i + 1}/{len(indexes)}] index {num}: inference failed\n\n")
+            #         out.flush()
+            #     continue
+
+            # verdict = evaluate_checkpoint(ds_art, num, parent, explanation)
+            # if verdict == "yes":
+            #     correct += 1
+            # elif verdict == "no":
+            #     incorrect += 1
+            # else:
+            #     unclear += 1
+
+            # if out:
+            #     out.write(f"[{i + 1}/{len(indexes)}] index {num}: judge verdict {verdict!r}\n"
+            #               f"Explanation: {explanation}\n\n")
+            #     out.flush()
+
+            # print(f"Output for index {num}: judge verdict {verdict!r}, index {i + 1}/{len(indexes)}")
+            # print(f"Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, Failed: {failed}, Total Processed: {len(indexes)}")
+
+
+        # print(f"FINAL: Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, Failed: {failed}, Total Processed: {len(indexes)}")
+        
     
-    for index, num in enumerate(arr): 
-        example = dataset['train'][index]
-        question = example["question"]
-        contexted = example["context"]["contexts"]
-        
-        prompt = make_prompt(question, "")
-        start = perf_counter()
-        thinking_content, content = worker_model.inference(prompt)
-        end = perf_counter()
-        
-        s += (end - start)
-        
-        # explanation = launch_inference(ds_art, worker_model, worker_context, num)
-        # print(f"{index}/{len(arr)}, index: {num}: {explanation}")
-        
-        # if explanation is None:
-        #     failed += 1
-        #     if out:
-        #         out.write(f"[{i + 1}/{len(indexes)}] index {num}: inference failed\n\n")
-        #         out.flush()
-        #     continue
-
-        # verdict = evaluate_checkpoint(ds_art, num, parent, explanation)
-        # if verdict == "yes":
-        #     correct += 1
-        # elif verdict == "no":
-        #     incorrect += 1
-        # else:
-        #     unclear += 1
-
-        # if out:
-        #     out.write(f"[{i + 1}/{len(indexes)}] index {num}: judge verdict {verdict!r}\n"
-        #               f"Explanation: {explanation}\n\n")
-        #     out.flush()
-
-        # print(f"Output for index {num}: judge verdict {verdict!r}, index {i + 1}/{len(indexes)}")
-        # print(f"Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, Failed: {failed}, Total Processed: {len(indexes)}")
-
-
-    # print(f"FINAL: Correct: {correct}, Incorrect: {incorrect}, Unclear: {unclear}, Failed: {failed}, Total Processed: {len(indexes)}")
-    
-   
 
     # elapsed = end - start
     print(f"Executed in: {s:.6f} seconds")
