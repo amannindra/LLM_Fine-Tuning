@@ -159,8 +159,11 @@ def main():
     outputs = llm.generate(prompts, sampling_params)
     end = perf_counter()
     
-    print(f"Time spent: {str(end - start)}")
-
+    total = end - start
+    
+    print(f"Time spent: {total}")
+    print(f"Time spend per prompt: {total/len(prompts)}")
+    
     i = 0
     out = ""
     for index, output in enumerate(outputs):
@@ -169,11 +172,13 @@ def main():
         
         out += f"[{index}: Prompt: {prompt!r}: Generated text: {generated_text!r}], "
         if i < 5:
-            print(out)
+            print()
+            # print(out)
         i += 1
         
+        
     
-    with open("filename.txt", "w") as file:
+    with open("filename2.txt", "w") as file:
         file.write(out)
 
 if __name__ == "__main__":
