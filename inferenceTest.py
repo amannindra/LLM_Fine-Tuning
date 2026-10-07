@@ -24,11 +24,12 @@ from datasets import load_dataset
 #     args.trained
 # )
 class LLMInference:
-    def __init__(self, fineTune, max_tokens, location = "outputs/checkpoint-60/"):
+    def __init__(self, fineTune, max_tokens, location = "outputs/checkpoint-60/", dtype = None):
         self.device = torch.device("cuda")
         self.max_tokens = max_tokens
         self.base_model = AutoModelForCausalLM.from_pretrained(
             "unsloth/Llama-3.2-3B-Instruct",
+            torch_dtype=dtype,
         )
         self.tokenizer = AutoTokenizer.from_pretrained(
             "unsloth/Llama-3.2-3B-Instruct"

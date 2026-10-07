@@ -34,7 +34,7 @@ def make_prompt(question, context) -> str:
         Question: {question}
         """
 
-    s += """Give a detailed explanation of your reasoning. Make sure to provide a explanation with a maximum of 300 tokens.
+    s += """Give a detailed explanation of your reasoning.
 
         Explanation: """
 
@@ -171,7 +171,8 @@ def main():
     # print(f"Processing {len(indexes)} examples.")
     # print(f"Fine-tuned: {cli_args.fine_tune}, Context: {cli_args.context}")
 
-    worker_model = LLMInference(cli_args.fine_tune, cli_args.max_new_tokens)
+    # bf16 to match vLLM's default dtype; fp32 would make the HF baseline unfairly slow.
+    worker_model = LLMInference(cli_args.fine_tune, cli_args.max_new_tokens, dtype=torch.bfloat16)
     worker_context = cli_args.context
 
     # from Parent import ParentModel
@@ -194,14 +195,20 @@ def main():
         
     s = 0
     with torch.inference_mode():
-        for index, num in enumerate(arr): 
-            example = dataset['train'][index]
+        # Warmup so CUDA init / kernel compilation isn't counted in the timing.
+        worker_model.inference(make_prompt("Is aspirin an NSAID?", ""))
+        torch.cuda.synchronize()
+
+        for index, num in enumerate(arr):
+            example = ds_art['train'][num]
             question = example["question"]
             contexted = example["context"]["contexts"]
-            
+
             prompt = make_prompt(question, "")
+            torch.cuda.synchronize()
             start = perf_counter()
             thinking_content, content = worker_model.inference(prompt)
+            torch.cuda.synchronize()
             end = perf_counter()
             
             s += (end - start)
