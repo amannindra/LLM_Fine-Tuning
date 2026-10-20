@@ -1,4 +1,5 @@
 
+from datasets import load_dataset
 from time import perf_counter
 start = perf_counter()
 from vllm import LLM, SamplingParams
@@ -18,7 +19,8 @@ import argparse
 import os
 from inferenceTest import LLMInference
 import random
-from datasets import load_dataset
+
+from pathlib import Path
 
 
 # from Parent import ParentModel
@@ -50,10 +52,52 @@ def make_prompt(question, context) -> str:
 
     return s
 
+def make_judge_prompt(question, context, answer, student) -> str:
+    s = f"""You are an expert doctor grading a student's answer to a medical question. You are given the question, the relevant context, the answer to the question, and the student's explanation.
+
+    Decide whether the student's explanation and final answer are correct, based on the context and your medical knowledge.
+
+    Question: {question}
+    Context: {" ".join(context)}
+    answer: {answer}
+
+    Student's explanation: {student}
+
+    Is the student correct? Respond with exactly one of these labels:
+    yes
+    no
+
+    Answer:"""
+
+    return s
 
 
-def generate_prompt(arr, ds_art, context = False):
-    prompt = []
+def generate_parent_prompt(out):
+    prompts = []
+    for i in range(len(out)):
+        example = out[i]
+        question = example["Question"]
+        context = example["Context"]
+        answer = example["Answer"]
+        final_answer = example["Final_decision"]
+        student = example["Model_output"]
+        
+        parent_prompt = make_judge_prompt(question, context, answer, student)
+        prompts.append(parent_prompt)
+    return prompts
+        
+
+def save_file(path, data):
+    location = Path(path)
+    location.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(location, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+
+def generate_student_prompt(arr, ds_art, context = False):
+    prompt = [] # {Question: }
+
     print(f"arr: {arr}")
     print(f"ds_art: {ds_art}")
     print(f"context: {context}")
@@ -70,7 +114,7 @@ def generate_prompt(arr, ds_art, context = False):
                 prompt.append(make_prompt(question, contexted))
             else:
                 prompt.append(make_prompt(question, ""))
-
+                
             # print(f"Prompt: {prompt}")
 
             # thinking_content, content = worker_model.inference(prompt, max_new_tokens=max_new_tokens)
@@ -84,7 +128,7 @@ def generate_prompt(arr, ds_art, context = False):
     return prompt
 
 
-
+     
 
 def main():
     parser = argparse.ArgumentParser()
@@ -92,7 +136,7 @@ def main():
     parser.add_argument("--index", type=int, default=1000,
                         help="Number of random examples to evaluate (default: 10).")
     parser.add_argument("--context", action="store_true", help="Include the context in the student's prompt.")
-    parser.add_argument("--num-samples", type=int, default=10,
+    parser.add_argument("--num-samples", type=int, default=100,
                         help="Number of labeled examples for checkpoint evaluation (default: 4000).")
     parser.add_argument("--fine-tune", action="store_true", help="Use the fine-tuned checkpoint instead of the base model.")
     parser.add_argument("--max-new-tokens", type=int, default=300,
@@ -140,7 +184,7 @@ def main():
     
     context = False
     
-    prompts = generate_prompt(arr, ds_art, context)
+    prompts = generate_student_prompt(arr, ds_art, context)
     
     
     print(f"Example of Prompt: {prompts[0]}")    
@@ -153,7 +197,7 @@ def main():
     #     "The future of AI is",
     # ]
         
-    llm = LLM(model = "unsloth/Llama-3.2-3B-Instruct")
+    llm = LLM(model = "Qwen/Qwen3-4B-Base")
     
     start = perf_counter()
     outputs = llm.generate(prompts, sampling_params)
@@ -165,21 +209,67 @@ def main():
     print(f"Time spend per prompt: {total/len(prompts)}")
     
     i = 0
-    out = ""
+    out = [] # [{Qestion: "", Context: "", "Answer"}]
+    
+    for index, output in enumerate(outputs):
+        # prompt = output.prompt
+        generated_text = output.outputs[0].text
+
+        example = ds_art["train"][arr[index]]
+        question = example["question"]
+        contexted = example["context"]["contexts"]
+        answer = example["long_answer"]
+        final_decision = example['final_decision']
+        
+        out.append({"Question": question, "Context": contexted, "Answer":
+            answer, "Final_decision": final_decision,
+                   "Model_output": generated_text})
+    
+        # out += f"[{index}: Prompt: {prompt!r}: Generated text: {generated_text!r}], "
+        # if i < 5:
+        #     print()
+        #     # print(out)
+        # i += 1
+        
+    dir_path = Path("Qwen3_4B")
+    dir_path.mkdir(parents=True, exist_ok=True)
+    test_count = sum(1 for item in dir_path.iterdir() if item.is_dir() and item.name.startswith("test_"))
+    test = f"test_{test_count + 1}"
+
+    save_file(dir_path / test / "student_output.json", out)
+    
+    
+    prompts = generate_parent_prompt(out)
+    
+    judge_sampling_params = SamplingParams(temperature=0.0, max_tokens=10, structured_outputs=StructuredOutputsParams(
+        choice=["yes", "no"]
+    ))
+
+    start = perf_counter()
+    outputs = llm.generate(prompts, judge_sampling_params)
+    end = perf_counter()
+    
+    
+
+    out = []
+    count = 0
     for index, output in enumerate(outputs):
         prompt = output.prompt
         generated_text = output.outputs[0].text
+        if generated_text == "yes":
+            count += 1
+        output.append({"Prompts": prompt, "output": generated_text})
         
-        out += f"[{index}: Prompt: {prompt!r}: Generated text: {generated_text!r}], "
-        if i < 5:
-            print()
-            # print(out)
-        i += 1
-        
+    print(f"Final Score: {count}/{len(outputs)}: {count/len(outputs)}")    
         
     
-    with open("filename3.txt", "w") as file:
-        file.write(out)
+    
+    
+    save_file(dir_path / test / "parent_output.json", out)
+
+
+    # with open("filename4.txt", "w") as file:
+    #     file.write(out)
 
 if __name__ == "__main__":
     main()
