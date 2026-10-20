@@ -89,12 +89,26 @@ def generate_parent_prompt(out):
         prompts.append(parent_prompt)
     return prompts
         
-def save_file(path, data):
-    location = Path(path)
-    location.parent.mkdir(parents=True, exist_ok=True)
+def save_file(model_name, file, data):
+    dir_path = Path(model_name)
+    dir_path.mkdir(parents=True, exist_ok=True)
 
+    file_count = sum(1 for item in dir_path.iterdir() if item.is_dir())
+    print(f"Number of files: {file_count}")
+    
+    file_count += 1
+    test = f"test_{file_count}"
+    
+    test_path = dir_path / Path(test)
+    
+    test_path.mkdir(parents=True, exist_ok=True)
+    
+    location = test_path / Path(file)
+    
+    print(f'Location: {location}')
+    
     with open(location, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+        ujson.dump(data, f, indent=4)
 
 
 
@@ -235,12 +249,12 @@ def main():
         #     # print(out)
         # i += 1
         
-    model_dir = Path("Qwen3_4B")
-    model_dir.mkdir(parents=True, exist_ok=True)
-    test_count = sum(1 for item in model_dir.iterdir() if item.is_dir() and item.name.startswith("test_"))
-    test_dir = model_dir / f"test_{test_count + 1}"
+    model_name = "Qwen3_4B"
+    
+    print("save file is called")
+    save_file(model_name, "student_output.json", out)
 
-    save_file(test_dir / "student_output.json", out)
+
 
 if __name__ == "__main__":
     main()

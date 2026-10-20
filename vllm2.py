@@ -5,6 +5,7 @@ start = perf_counter()
 from vllm import LLM, SamplingParams
 from time import time
 from singleInference import parse_arg2
+from vllm.sampling_params import StructuredOutputsParams
 
 import json
 import sys
@@ -136,7 +137,7 @@ def main():
     parser.add_argument("--index", type=int, default=1000,
                         help="Number of random examples to evaluate (default: 10).")
     parser.add_argument("--context", action="store_true", help="Include the context in the student's prompt.")
-    parser.add_argument("--num-samples", type=int, default=100,
+    parser.add_argument("--num-samples", type=int, default=10000,
                         help="Number of labeled examples for checkpoint evaluation (default: 4000).")
     parser.add_argument("--fine-tune", action="store_true", help="Use the fine-tuned checkpoint instead of the base model.")
     parser.add_argument("--max-new-tokens", type=int, default=300,
@@ -199,6 +200,7 @@ def main():
         
     llm = LLM(model = "Qwen/Qwen3-4B-Base")
     
+    
     start = perf_counter()
     outputs = llm.generate(prompts, sampling_params)
     end = perf_counter()
@@ -236,6 +238,8 @@ def main():
     test_count = sum(1 for item in dir_path.iterdir() if item.is_dir() and item.name.startswith("test_"))
     test = f"test_{test_count + 1}"
 
+    print(f"Student Model: {out[0:1]}")
+
     save_file(dir_path / test / "student_output.json", out)
     
     
@@ -258,7 +262,9 @@ def main():
         generated_text = output.outputs[0].text
         if generated_text == "yes":
             count += 1
-        output.append({"Prompts": prompt, "output": generated_text})
+        out.append({"Prompts": prompt, "output": generated_text})
+        
+    print(f"Parent Model: {out[0:1]}")
         
     print(f"Final Score: {count}/{len(outputs)}: {count/len(outputs)}")    
         
