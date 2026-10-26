@@ -4,7 +4,7 @@ from time import perf_counter
 start = perf_counter()
 from vllm import LLM, SamplingParams
 from time import time
-from singleInference import parse_arg2
+# from singleInference import parse_arg2
 from vllm.sampling_params import StructuredOutputsParams
 
 import json
@@ -18,7 +18,7 @@ import numpy as np
 from timebudget import timebudget
 import argparse
 import os
-from inferenceTest import LLMInference
+# from inferenceTest import LLMInference
 import random
 
 from pathlib import Path
@@ -34,7 +34,7 @@ print(f"Executed in: {elapsed:.6f} seconds")
 print("Imports Loaded")
 
 
-def make_prompt(question, context) -> str:
+def make_prompt(question, context, max_new_tokens) -> str:
     # `context` is a list of passages, or "" for the no-context setting.
     if context:
         context = " ".join(context)
@@ -47,13 +47,13 @@ def make_prompt(question, context) -> str:
         Question: {question}
         """
 
-    s += """Give a detailed explanation of your reasoning.
+    s += f"""Give a detailed explanation of your reasoning. Make sure your answer is at most {max_new_tokens} characters long.
 
         Explanation: """
 
     return s
 
-def make_judge_prompt(question, context, answer, student) -> str:
+def make_judge_prompt(question, context, answer, student, max_new_tokens = 400) -> str:
     s = f"""You are an expert doctor grading a student's answer to a medical question. You are given the question, the relevant context, the answer to the question, and the student's explanation.
 
     Decide whether the student's explanation and final answer are correct, based on the context and your medical knowledge.
@@ -82,8 +82,9 @@ def generate_parent_prompt(out):
         answer = example["Answer"]
         final_answer = example["Final_decision"]
         student = example["Model_output"]
+        max_tokens = example["Max_Content"]
         
-        parent_prompt = make_judge_prompt(question, context, answer, student)
+        parent_prompt = make_judge_prompt(question, context, answer, student, max_tokens)
         prompts.append(parent_prompt)
     return prompts
         
@@ -96,7 +97,7 @@ def save_file(path, data):
         json.dump(data, f, indent=4)
 
 
-def generate_student_prompt(arr, ds_art, context = False):
+def generate_student_prompt(arr, ds_art, context = False, max_new_tokens = 400):
     prompt = [] # {Question: }
 
     print(f"arr: {arr}")
@@ -112,9 +113,9 @@ def generate_student_prompt(arr, ds_art, context = False):
             # print(f"Question: {question}, Context: {contexted}")
 
             if context:
-                prompt.append(make_prompt(question, contexted))
+                prompt.append(make_prompt(question, contexted, max_new_tokens))
             else:
-                prompt.append(make_prompt(question, ""))
+                prompt.append(make_prompt(question, "", max_new_tokens))
                 
             # print(f"Prompt: {prompt}")
 
@@ -140,7 +141,7 @@ def main():
     parser.add_argument("--num-samples", type=int, default=10000,
                         help="Number of labeled examples for checkpoint evaluation (default: 4000).")
     parser.add_argument("--fine-tune", action="store_true", help="Use the fine-tuned checkpoint instead of the base model.")
-    parser.add_argument("--max-new-tokens", type=int, default=1000,
+    parser.add_argument("--max-new-tokens", type=int, default=400,
                         help="Max length of the student's explanation (default: 300).")
     parser.add_argument("--seed", type=int, default=0, help="Seed for choosing examples (default: 0).")
     parser.add_argument("--output", help="Write per-example results and the final summary to this .txt file.")
@@ -185,7 +186,7 @@ def main():
     
     context = False
     
-    prompts = generate_student_prompt(arr, ds_art, context)
+    prompts = generate_student_prompt(arr, ds_art, context, cli_args.max_new_tokens)
     
     
     print(f"Example of Prompt: {prompts[0]}")    
@@ -225,7 +226,8 @@ def main():
         
         out.append({"Question": question, "Context": contexted, "Answer":
             answer, "Final_decision": final_decision,
-                   "Model_output": generated_text})
+                   "Model_output": generated_text,
+                   "Max_Content": cli_args.max_new_tokens})
     
         # out += f"[{index}: Prompt: {prompt!r}: Generated text: {generated_text!r}], "
         # if i < 5:

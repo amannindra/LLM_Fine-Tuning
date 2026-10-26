@@ -24,10 +24,6 @@ def format_prompt_function(example):
     
     return example
 
-
-
-
-
 ds_art["train"] = ds_art["train"].map(format_prompt_function, batched = True)
 
 max_seq_length = 2048
