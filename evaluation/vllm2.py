@@ -140,7 +140,7 @@ def main():
     parser.add_argument("--num-samples", type=int, default=10000,
                         help="Number of labeled examples for checkpoint evaluation (default: 4000).")
     parser.add_argument("--fine-tune", action="store_true", help="Use the fine-tuned checkpoint instead of the base model.")
-    parser.add_argument("--max-new-tokens", type=int, default=300,
+    parser.add_argument("--max-new-tokens", type=int, default=1000,
                         help="Max length of the student's explanation (default: 300).")
     parser.add_argument("--seed", type=int, default=0, help="Seed for choosing examples (default: 0).")
     parser.add_argument("--output", help="Write per-example results and the final summary to this .txt file.")
@@ -267,9 +267,6 @@ def main():
     print(f"Parent Model: {out[0:1]}")
         
     print(f"Final Score: {count}/{len(outputs)}: {count/len(outputs)}")    
-        
-    
-    
     
     save_file(dir_path / test / "parent_output.json", out)
 

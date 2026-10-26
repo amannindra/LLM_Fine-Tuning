@@ -62,7 +62,7 @@ print("fine2.py Imports Loaded")
 
 # print(f"Type: {type(ds_art)}")
 ds_art, __, __ = load_data()
-data_size = 1000
+data_size = 10000
 
 test = ds_art['train'][:data_size]
 print(f"Type test: {type(test)}, Keys: {test.keys()}, len(test.values()): {len(test)}")
@@ -171,7 +171,7 @@ print(f"config complete: {config}")
 training_args = SFTConfig(
     output_dir="new_output",
     learning_rate=1e-3,
-    per_device_train_batch_size=48,
+    per_device_train_batch_size=36,
     # per_device_eval_batch_size=16,
     num_train_epochs=1,
     weight_decay=0.01,
