@@ -4,7 +4,8 @@ from time import perf_counter
 start = perf_counter()
 from vllm import LLM, SamplingParams
 from time import time
-from singleInference import parse_arg2
+# from singleInference import parse_arg2
+from vllm.sampling_params import StructuredOutputsParams
 
 import json
 import sys
@@ -13,14 +14,11 @@ import torch
 import re
 import numpy as np
 
-import orjson
-import ujson
-
 
 from timebudget import timebudget
 import argparse
 import os
-from inferenceTest import LLMInference
+# from inferenceTest import LLMInference
 import random
 
 from pathlib import Path
@@ -36,26 +34,30 @@ print(f"Executed in: {elapsed:.6f} seconds")
 print("Imports Loaded")
 
 
-def make_prompt(question, context) -> str:
+def make_prompt(question, context, max_new_tokens) -> str:
     # `context` is a list of passages, or "" for the no-context setting.
     if context:
         context = " ".join(context)
-        s = f"""Use the medical context below to answer the question.
-        Context: {context}
-        Question: {question}
-        """
+        s = f"""Answer the research question using only the study context below. Summarize the study's finding and retain important qualifications or limitations.
+
+Context:
+{context}
+
+Question: {question}
+"""
     else:
-        s = f"""Answer the medical question.
-        Question: {question}
-        """
+        s = f"""Answer the research question using your learned knowledge. Give the most accurate answer you can, and do not invent study-specific findings or supporting facts.
 
-    s += """Give a detailed explanation of your reasoning.
+Question: {question}
+"""
 
-        Explanation: """
+    s += f"""Write one or two concise declarative sentences that state the finding directly, like a research conclusion. Preserve uncertainty or limitations when relevant. Do not start with a yes/no label, add general background or unsupported mechanisms, or use a list. Keep the response within {max_new_tokens} tokens.
+
+Answer: """
 
     return s
 
-def make_judge_prompt(question, context, answer, student) -> str:
+def make_judge_prompt(question, context, answer, student, max_new_tokens = 400) -> str:
     s = f"""You are an expert doctor grading a student's answer to a medical question. You are given the question, the relevant context, the answer to the question, and the student's explanation.
 
     Decide whether the student's explanation and final answer are correct, based on the context and your medical knowledge.
@@ -84,35 +86,22 @@ def generate_parent_prompt(out):
         answer = example["Answer"]
         final_answer = example["Final_decision"]
         student = example["Model_output"]
+        max_tokens = example["Max_Content"]
         
-        parent_prompt = make_judge_prompt(question, context, answer, student)
+        parent_prompt = make_judge_prompt(question, context, answer, student, max_tokens)
         prompts.append(parent_prompt)
     return prompts
         
-def save_file(model_name, file, data):
-    dir_path = Path(model_name)
-    dir_path.mkdir(parents=True, exist_ok=True)
 
-    file_count = sum(1 for item in dir_path.iterdir() if item.is_dir())
-    print(f"Number of files: {file_count}")
-    
-    file_count += 1
-    test = f"test_{file_count}"
-    
-    test_path = dir_path / Path(test)
-    
-    test_path.mkdir(parents=True, exist_ok=True)
-    
-    location = test_path / Path(file)
-    
-    print(f'Location: {location}')
-    
+def save_file(path, data):
+    location = Path(path)
+    location.parent.mkdir(parents=True, exist_ok=True)
+
     with open(location, "w", encoding="utf-8") as f:
-        ujson.dump(data, f, indent=4)
+        json.dump(data, f, indent=4)
 
 
-
-def generate_student_prompt(arr, ds_art, context = False):
+def generate_student_prompt(arr, ds_art, context = False, max_new_tokens = 400):
     prompt = [] # {Question: }
 
     print(f"arr: {arr}")
@@ -128,9 +117,9 @@ def generate_student_prompt(arr, ds_art, context = False):
             # print(f"Question: {question}, Context: {contexted}")
 
             if context:
-                prompt.append(make_prompt(question, contexted))
+                prompt.append(make_prompt(question, contexted, max_new_tokens))
             else:
-                prompt.append(make_prompt(question, ""))
+                prompt.append(make_prompt(question, "", max_new_tokens))
                 
             # print(f"Prompt: {prompt}")
 
@@ -153,10 +142,10 @@ def main():
     parser.add_argument("--index", type=int, default=1000,
                         help="Number of random examples to evaluate (default: 10).")
     parser.add_argument("--context", action="store_true", help="Include the context in the student's prompt.")
-    parser.add_argument("--num-samples", type=int, default=100,
+    parser.add_argument("--num-samples", type=int, default=10000,
                         help="Number of labeled examples for checkpoint evaluation (default: 4000).")
     parser.add_argument("--fine-tune", action="store_true", help="Use the fine-tuned checkpoint instead of the base model.")
-    parser.add_argument("--max-new-tokens", type=int, default=300,
+    parser.add_argument("--max-new-tokens", type=int, default=400,
                         help="Max length of the student's explanation (default: 300).")
     parser.add_argument("--seed", type=int, default=0, help="Seed for choosing examples (default: 0).")
     parser.add_argument("--output", help="Write per-example results and the final summary to this .txt file.")
@@ -201,7 +190,7 @@ def main():
     
     context = False
     
-    prompts = generate_student_prompt(arr, ds_art, context)
+    prompts = generate_student_prompt(arr, ds_art, context, cli_args.max_new_tokens)
     
     
     print(f"Example of Prompt: {prompts[0]}")    
@@ -213,11 +202,14 @@ def main():
     #     "The capital of France is",
     #     "The future of AI is",
     # ]
-        
-    # llm = LLM(model = "Qwen/Qwen3-4B-Base")
+
+
+    
+    llm = LLM(model = "Qwen/Qwen3-4B-Base")
+    
     
     start = perf_counter()
-    # outputs = llm.generate(prompts, sampling_params)
+    outputs = llm.generate(prompts, sampling_params)
     end = perf_counter()
     
     total = end - start
@@ -228,10 +220,9 @@ def main():
     i = 0
     out = [] # [{Qestion: "", Context: "", "Answer"}]
     
-    # outputs = 
-    
-    for index in range(cli_args.num_samples):
+    for index, output in enumerate(outputs):
         # prompt = output.prompt
+        generated_text = output.outputs[0].text
 
         example = ds_art["train"][arr[index]]
         question = example["question"]
@@ -241,7 +232,8 @@ def main():
         
         out.append({"Question": question, "Context": contexted, "Answer":
             answer, "Final_decision": final_decision,
-        })
+                   "Model_output": generated_text,
+                   "Max_Content": cli_args.max_new_tokens})
     
         # out += f"[{index}: Prompt: {prompt!r}: Generated text: {generated_text!r}], "
         # if i < 5:
@@ -249,12 +241,45 @@ def main():
         #     # print(out)
         # i += 1
         
-    model_name = "Qwen3_4B"
+    dir_path = Path("Qwen3_4B")
+    dir_path.mkdir(parents=True, exist_ok=True)
+    test_count = sum(1 for item in dir_path.iterdir() if item.is_dir() and item.name.startswith("test_"))
+    test = f"test_{test_count + 1}"
+
+    print(f"Student Model: {out[0:1]}")
+
+    save_file(dir_path / test / "student_output.json", out)
     
-    print("save file is called")
-    save_file(model_name, "student_output.json", out)
+    
+    prompts = generate_parent_prompt(out)
+    
+    judge_sampling_params = SamplingParams(temperature=0.0, max_tokens=10, structured_outputs=StructuredOutputsParams(
+        choice=["yes", "no"]
+    ))
 
+    start = perf_counter()
+    outputs = llm.generate(prompts, judge_sampling_params)
+    end = perf_counter()
+    
+    
 
+    out = []
+    count = 0
+    for index, output in enumerate(outputs):
+        prompt = output.prompt
+        generated_text = output.outputs[0].text
+        if generated_text == "yes":
+            count += 1
+        out.append({"Prompts": prompt, "output": generated_text})
+        
+    print(f"Parent Model: {out[0:1]}")
+        
+    print(f"Final Score: {count}/{len(outputs)}: {count/len(outputs)}")    
+    
+    save_file(dir_path / test / "parent_output.json", out)
+    
+    # with open("filename4.txt", "w") as file:
+    #     file.write(out)
 
 if __name__ == "__main__":
     main()

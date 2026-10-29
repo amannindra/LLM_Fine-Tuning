@@ -38,18 +38,22 @@ def make_prompt(question, context, max_new_tokens) -> str:
     # `context` is a list of passages, or "" for the no-context setting.
     if context:
         context = " ".join(context)
-        s = f"""Use the medical context below to answer the question.
-        Context: {context}
-        Question: {question}
-        """
+        s = f"""Answer the research question using only the study context below. Summarize the study's finding and retain important qualifications or limitations.
+
+Context:
+{context}
+
+Question: {question}
+"""
     else:
-        s = f"""Answer the medical question.
-        Question: {question}
-        """
+        s = f"""Answer the research question using your learned knowledge. Give the most accurate answer you can, and do not invent study-specific findings or supporting facts.
 
-    s += f"""Give a detailed explanation of your reasoning. Make sure your answer is at most {max_new_tokens} characters long.
+Question: {question}
+"""
 
-        Explanation: """
+    s += f"""Write one or two concise declarative sentences that state the finding directly, like a research conclusion. Preserve uncertainty or limitations when relevant. Do not start with a yes/no label, add general background or unsupported mechanisms, or use a list. Keep the response within {max_new_tokens} tokens.
+
+Answer: """
 
     return s
 
@@ -198,8 +202,17 @@ def main():
     #     "The capital of France is",
     #     "The future of AI is",
     # ]
-        
-    llm = LLM(model = "Qwen/Qwen3-4B-Base")
+
+    safe = "/home/anindra/data/LLM_Fine-Tuning/merged_adapters_new2"
+    
+    llm = LLM(
+        model=safe,
+        tokenizer=safe,
+        dtype="auto",
+        max_model_len=2048,
+        gpu_memory_utilization = 0.95,
+        tensor_parallel_size = 2
+    )
     
     
     start = perf_counter()
@@ -235,14 +248,21 @@ def main():
         #     # print(out)
         # i += 1
         
-    dir_path = Path("Qwen3_4B")
+    dir_path = Path("Qwen3_4B_2_fine")
     dir_path.mkdir(parents=True, exist_ok=True)
     test_count = sum(1 for item in dir_path.iterdir() if item.is_dir() and item.name.startswith("test_"))
     test = f"test_{test_count + 1}"
+    test = f"test_7"
 
     print(f"Student Model: {out[0:1]}")
 
-    save_file(dir_path / test / "student_output.json", out)
+    print(f"")
+    
+    student_location = dir_path / test / "student_output.json"
+    
+    print(f"student location: {student_location}")
+
+    save_file(student_location, out)
     
     
     prompts = generate_parent_prompt(out)
@@ -270,9 +290,12 @@ def main():
         
     print(f"Final Score: {count}/{len(outputs)}: {count/len(outputs)}")    
     
-    save_file(dir_path / test / "parent_output.json", out)
-
-
+    parent_location = dir_path / test / "parent_output.json"
+    
+    print(f"parent_location: {parent_location}")
+    
+    save_file(parent_location, out)
+    
     # with open("filename4.txt", "w") as file:
     #     file.write(out)
 
